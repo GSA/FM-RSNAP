@@ -14,6 +14,12 @@
     "ValidationKey": "<insert the validation key that the SecureAuth team sent you>",
     "DecryptionKey": "<insert the decryption key that the SecureAuth team sent you>"
   },
+  "Databases": {
+    "RSNAP": {
+      "Database": "RSNAPDEV",
+      "Username": "RSNAPAPP"
+    }
+  },
   "FMDataAPIURL": "https://localhost:50002",
   "CookieAuthentication": {
     "ExpireMinutes": "6",

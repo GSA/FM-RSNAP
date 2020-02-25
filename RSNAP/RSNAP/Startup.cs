@@ -21,6 +21,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using RSNAP.EFData;
 
 namespace RSNAP
 {
@@ -72,6 +73,11 @@ namespace RSNAP
             services.AddSingleton<IFMUtilityDataAPIService>(client => new FMUtilityDataAPIService(client.GetService<ILogger<FMUtilityDataAPIService>>(),
                 client.GetService<IConfiguration>(), client.GetService<IHttpClientFactory>(),
                 _hostingEnvironment.IsDevelopment()));
+
+            // Set up RSNAP db context for dependency injection.
+            // Note: We don't specify connection string here. That is done in the context itself, because
+            // we depend on the utility config and password service singletons.
+            services.AddDbContext<RSNAPContext>(ServiceLifetime.Transient);
 
             // Configure cookie policy.
             services.Configure<CookiePolicyOptions>(options =>
