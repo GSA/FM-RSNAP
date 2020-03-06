@@ -140,15 +140,15 @@
                         .Name("ApprovalsGrid")
                         .Columns(columns =>
                         {
-                            columns.Bound(c => c.ScheduledStartDate).Title("Scheduled Start Date").Width(250);
-                             columns.Bound(c => c.ScheduledEndDate).Title("Scheduled End Date").Width(250);
-                             columns.Bound(c => c.OrderNumber).Title("Order Number").Width(250);
-                             columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number").Width(250);
-                             columns.Bound(c => c.PDN).Title("PDN").Width(250);
-                             columns.Bound(c => c.VendorName).Title("Vendor Name").Width(250);
-                             columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status").Width(250);
-                             columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status").Width(250);
-                             columns.Bound(c => c.NotificationStatus).Title("Notification Status").Width(250);
+                            columns.Bound(c => c.ScheduledStartDate).Title("Scheduled Start Date");
+                            columns.Bound(c => c.ScheduledEndDate).Title("Scheduled End Date");
+                            columns.Bound(c => c.OrderNumber).Title("Order Number");
+                            columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number");
+                            columns.Bound(c => c.PDN).Title("PDN");
+                            columns.Bound(c => c.VendorName).Title("Vendor Name");
+                            columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
+                            columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
+                            columns.Bound(c => c.NotificationStatus).Title("Notification Status");
                         })
                         .Events(events => events.DataBound("onGridDataBound"))
                         .Scrollable()
