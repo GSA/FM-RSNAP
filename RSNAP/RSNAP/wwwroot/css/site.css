@@ -303,6 +303,43 @@ span.k-widget.k-tooltip-validation.k-invalid-msg {
     width: 100%;
 }
 
+/* approval screen */
+h3 {
+    padding-bottom: 20px;
+}
+
+[type=submit] {
+    margin: 0;
+}
+
+.hide {
+    display: none;
+}
+
+#grid-export-header {
+    padding-bottom: 20px;
+    background: #ffffff;
+}
+
+.k-grid,
+.k-grid .k-auto-scrollable {
+    height: auto !important;
+    overflow-y: visible !important;
+}
+
+/* Hide the Grid header, pager and filters during export */
+.k-pdf-export .k-grid-toolbar,
+.k-pdf-export .k-pager-wrap,
+.k-pdf-export .k-filterable .k-grid-filter {
+    display: none;
+}
+
+
+.redWarningCopy {
+    color: #cc0000;
+}
+
+
 /* FMIT Common controls styles
 -------------------------------------------------- */
 .modal-header {
@@ -350,10 +387,10 @@ span.k-widget.k-tooltip-validation.k-invalid-msg {
     padding-bottom: 0px;
 }
 
-.usa-footer .usa-footer__primary-link:hover {
-    cursor: pointer;
-    text-decoration: underline;
-}
+    .usa-footer .usa-footer__primary-link:hover {
+        cursor: pointer;
+        text-decoration: underline;
+    }
 
 @media screen and (min-width: 951px) {
     .usa-header-slim-logo-img {

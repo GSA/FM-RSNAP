@@ -65,7 +65,7 @@ namespace RSNAP.Controllers
         [Authorize]
         public IActionResult LoggedIn()
         {
-            return View();
+            return RedirectToAction("Index", "Approvals");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

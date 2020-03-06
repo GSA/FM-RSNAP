@@ -1,0 +1,200 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@model RSNAP.Models.ApprovalsModel
+
+@inject IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = "Approvals";
+}
+<script>
+    var loadingError = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.loadingError));
+</script>
+
+<div class="grid-container" id="approvalsContainer">
+    <div class="grid-row">
+        <div class="grid-col-12">
+            <script src="~/js/Approvals.js" asp-append-version="true"></script>
+            <script src="~/js/Common.js" asp-append-version="true"></script>
+            <div>
+                <h3>Search Criteria</h3>
+            </div>
+            <div class="grid-row header">
+                <div class="col-md-4 padding-bottom-1">
+                    <label>Scheduled Start Date</label>
+                    <span class="k-invalid-msg" data-for="ScheduledStartDate"></span><br />
+                    @(Html.Kendo().DatePicker()
+                                                     .Name("ScheduledStartDate")
+                                                     .Start(CalendarView.Year)
+                                                     .Depth(CalendarView.Year)
+                                                     .Format("MM/yyyy")
+                                                     .DateInput(true)
+                                                     .HtmlAttributes(new { @placeholder = "Scheduled Start Date" })
+                    )
+                </div>
+                <div class="col-md-4 padding-bottom-1">
+                    <label>Scheduled End Date</label>
+                    <span class="k-invalid-msg" data-for="ScheduledEndDate"></span><br />
+                    @(Html.Kendo().DatePicker()
+                                                     .Name("ScheduledEndtDate")
+                                                     .Start(CalendarView.Year)
+                                                     .Depth(CalendarView.Year)
+                                                     .Format("MM/yyyy")
+                                                     .DateInput(true)
+                                                     .HtmlAttributes(new { @placeholder = "Scheduled End Date" })
+                    )
+                </div>
+                <div class="col-md-4 padding-bottom-1">
+                    <label>Order Number</label>
+                    <span class="k-invalid-msg" data-for="OrderNumber"></span><br />
+                    @Html.TextBoxFor(x => x.OrderNumber)
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="col-md-4 padding-bottom-1">
+                    <label>IDV/Contract Number</label>
+                    <span class="k-invalid-msg" data-for="IDVContractNumber"></span><br />
+                    @Html.TextBoxFor(x => x.IDVContractNumber)
+                </div>
+                <div class="col-md-4 padding-bottom-1">
+                    <label>PDN</label>
+                    <span class="k-invalid-msg" data-for="PDN"></span><br />
+                    @Html.TextBoxFor(x => x.PDN)
+                </div>
+                <div class="col-md-4 padding-bottom-1">
+                    <label>Vendor Name</label>
+                    <span class="k-invalid-msg" data-for="VendorName"></span><br />
+                    @Html.TextBoxFor(x => x.VendorName)
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="col-md-4 padding-bottom-1">
+                    <label>FO Apporoval Status</label>
+                    <span class="k-invalid-msg" data-for="FOApprovalStatus"></span><br />
+                    @(Html.Kendo().DropDownList()
+                                                                  .Name("FOApprovalStatusAvailable")
+                                                                  .AutoBind(true)
+                                                                  .HtmlAttributes(new { })
+                                                                  .BindTo(Model.FOApprovalStatusAvailable)
+                    )
+                </div>
+                <div class="col-md-4 padding-bottom-1">
+                    <label>ACO Approval Status</label>
+                    <span class="k-invalid-msg" data-for="ACOApprovalStatus"></span><br />
+                    @(Html.Kendo().DropDownList()
+                                                                       .Name("ACOApprovalStatusAvailable")
+                                                                       .AutoBind(true)
+                                                                       .HtmlAttributes(new { })
+                                                                       .BindTo(Model.ACOApprovalStatusAvailable)
+                    )
+                </div>
+                <div class="col-md-4 padding-bottom-1">
+                    <label>Notification Status</label>
+                    <span class="k-invalid-msg" data-for="NotificationStatus"></span><br />
+                    @(Html.Kendo().DropDownList()
+                                                                        .Name("NotificationStatusAvailable")
+                                                                        .AutoBind(true)
+                                                                        .HtmlAttributes(new { })
+                                                                        .BindTo(Model.NotificationStatusAvailable)
+                    )
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="col-md-12 padding-bottom-2">
+                    <div class="padding-bottom-1">
+                        <button type="submit" id="Search" class="btn" accesskey="s"><u>S</u>earch</button>
+                        <button type="submit" id="Clear" class="btn" accesskey="c"><u>C</u>lear</button>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="col-md-12 padding-bottom-2">
+                    <h3 class="redWarningCopy text-center">
+                        Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts
+                    </h3>
+                </div>
+            </div>
+        </div>
+
+        <div id="approvalsGridWrapper" class="hide">
+            @*<div class="grid-row" id="grid-export-header">
+                    <div class="grid-col-2">
+                        <div class="text-bold">GSA Recon-NWTB</div>
+                    </div>
+                    <div class="grid-col-5">
+                        <div class="text-bold text-italic" id="reportTitleExportLabel">
+                        </div>
+                        <div class="text-italic">
+                            For Report Date: <span id="reportDateExportLabel"></span>
+                        </div>
+                    </div>
+                    <div class="grid-col-5">
+                        <div>*** FOR U.S. GOVERNMENT USE ONLY ***</div>
+                        <div>
+                            Run date: <span id="reportRunDateLabel"></span>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="grid-row">
+                <div class="padding-bottom2">
+                    @(Html.Kendo().Grid<ApprovalsModel>()
+                        .Name("ApprovalsGrid")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.ScheduledStartDate).Title("Scheduled Start Date").Width(250);
+                             columns.Bound(c => c.ScheduledEndDate).Title("Scheduled End Date").Width(250);
+                             columns.Bound(c => c.OrderNumber).Title("Order Number").Width(250);
+                             columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number").Width(250);
+                             columns.Bound(c => c.PDN).Title("PDN").Width(250);
+                             columns.Bound(c => c.VendorName).Title("Vendor Name").Width(250);
+                             columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status").Width(250);
+                             columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status").Width(250);
+                             columns.Bound(c => c.NotificationStatus).Title("Notification Status").Width(250);
+                        })
+                        .Events(events => events.DataBound("onGridDataBound"))
+                        .Scrollable()
+                        .Navigatable(true)
+                        .Filterable()
+                        .Sortable()
+                        .AutoBind(false)
+                        .Pageable(pager => pager.PageSizes(new[] { 10, 20, 50, 100 })
+                        .Refresh(true)
+                        .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            //.Aggregates(aggregates =>
+                            //{
+                            //    aggregates.Add(p => p.TrialBalanceAmount).Sum();
+                            //})
+                            //.Group(groups => groups.Add(p => p.Fund))
+                            .Batch(true)
+                            .ServerOperation(false)
+                            .Events(events => events.Error("ajax_error_handler"))
+                            .Model(model => model.Id(a => a.Id))
+                            .Read(read => read.Action("Approvals_Read", "Approvals").Data("getGridParams"))
+                            .PageSize(20)
+                        )
+                    )
+
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="col-md-12 padding-bottom-2">
+                    <div class="text-center padding-bottom-1">
+                        <button type="submit" id="SelectAll" class="btn" accesskey="a">Select All</button>
+                        <button type="submit" id="Approve" class="btn" accesskey="b">Approve</button>
+                        <button type="submit" id="Unapprove" class="btn" accesskey="u">Unapprove</button>
+                        <button type="submit" id="UnderReview" class="btn" accesskey="r">Under Review</button>
+                        <button type="submit" id="SaveToExcel" class="btn" accesskey="e">Save To Excel</button>
+
+                    </div>
+                    <div class="text-center padding-bottom-2">
+                        <div class="status">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="overlay"></div>
+    </div>
+
+</div>
