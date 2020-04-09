@@ -77,7 +77,7 @@ namespace RSNAP.EFData
                             if (string.IsNullOrEmpty(currentUsername)) success = false;
                         }
 
-                        // Resolve the password for this database/username.
+                        // Resolve the password for this database/username. Cast to upper.
                         var password = "";
                         if (success)
                         {
