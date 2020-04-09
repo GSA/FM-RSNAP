@@ -121,8 +121,26 @@ function displayLoading(target, display) {
 function Clear() {
 
     $(".status").html('');
-    //$("#ReportTitle").data("kendoDropDownList").value(-1);
-    //$("#ReportDate").data("kendoDatePicker").value(null);
+    $('#OrderNumber').val('');
+    $('#IDVContractNumber').val('');
+    var kk1 = $("#ScheduledStartDate").data("kendoDatePicker");
+    console.log(kk1);
+
+    kk1.value(new Date(null)); kk1.trigger('change');
+    //if (kk1.getDate() != new Date(null).getDate()) {
+    //    kk1.value(new Date(null)); kk1.trigger('change');
+    //}
+   
+    var kk2 = $("#ScheduledEndDate").data("kendoDatePicker");
+    kk2.value(new Date(null)); kk2.trigger('change');
+    $("#PDN").val('');
+    $("#VendorName").val('');
+    var dd1 = $("#FOApprovalStatusAvailable").data("kendoDropDownList");
+    dd1.select(0); dd1.trigger('change');
+    var dd2 = $("#NotificationStatusAvailable").data("kendoDropDownList");
+    dd2.select(0); dd2.trigger('change');
+    var dd3 = $("#ACOApprovalStatusAvailable").data("kendoDropDownList");
+    kk1.value(new Date(null)); kk1.trigger('change');   dd3.select(0); dd3.trigger('change');
     //validator.hideMessages();
 
     $("#approvalsGridWrapper").addClass('hide');
@@ -156,7 +174,13 @@ function Search() {
 
         var grid = $(gridName).data("kendoGrid");
 
-        grid.dataSource.read();
+        grid.dataSource.page(1);
+
+        grid.setOptions({
+            pageable: {
+                Total: window.count
+            }
+        });
 
         var pageSizeDropDownList = grid.wrapper.children(".k-grid-pager").find("select").data("kendoDropDownList");
         var datasource = pageSizeDropDownList.dataSource;
@@ -195,12 +219,35 @@ function exportData() {
 function getGridParams() {
 
     //stubbed
-    var id = 1;
-    //var id = $('#ReportTitle').val();
-    //var date = $('#ReportDate').val();
+    
+    var id = $('#OrderNumber').val();
+    var IDV = $('#IDVContractNumber').val();
+    var scheduledStartDate = $("#ScheduledStartDate").data("kendoDatePicker").value();
+    var scheduledEndDate = $("#ScheduledEndDate").data("kendoDatePicker").value();
+    var PDN = $("#PDN").val();
+    var fOApprovalStatusAvailable = $("#FOApprovalStatusAvailable").val();
+    var VendorName = $("#VendorName").val();
+    var aCOApprovalStatusAvailable = $("#ACOApprovalStatusAvailable").val();
+    var notificationStatusAvailable = $("#NotificationStatusAvailable").val();
+   
+    if (scheduledStartDate != null && scheduledStartDate.getDate() == new Date(null).getDate()) {
+        scheduledStartDate = null;
+    }
+    if (scheduledEndDate != null && scheduledEndDate.getDate() == new Date(null).getDate()) {
+        scheduledEndDate = null;
+    }
+
 
     return {
-        id: id,
+        PPID: id,
+        IDVContractNumber: IDV,
+        ScheduledStartDate: scheduledStartDate,
+        ScheduledEndDate: scheduledEndDate,
+        PDN: PDN,
+        VendorName: VendorName,
+        FOApprovalStatus: fOApprovalStatusAvailable,
+        ACOApprovalStatusAvailable: aCOApprovalStatusAvailable,
+        NotificationStatusAvailable: notificationStatusAvailable
         //date: date
     }
 }

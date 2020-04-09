@@ -1,6 +1,11 @@
 ﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
 for details on configuring this project to bundle and minify static web assets. */
 /*Page padding-top is set to 10px*/
+@font-face {
+    font-family: 'WebComponentsIcons';
+    src: url(../lib/kendo-ui/styles/fonts/glyphs/WebComponentsIcons.eot);
+    src: url(../lib/kendo-ui/styles/fonts/glyphs/WebComponentsIcons.woff) format('woff');
+}
 body {
     padding-top: 5px;
     padding-bottom: 20px;
@@ -355,10 +360,13 @@ h3 {
 .negative-currency {
     color: red;
 }
+
+
+
 /* Replace pager glyph icons after 508 formatting. */
 .k-i-arrow-end-left::before, .k-i-arrow-end-right::before,
 .k-i-arrow-60-left::before, .k-i-arrow-60-right::before {
-    font-family: WebComponentsIcons;
+    font-family: 'WebComponentsIcons';
 }
 
 /* Logo Header with over-ride */
@@ -408,3 +416,73 @@ h3 {
         padding-top: 30px;
     }
 }
+.toolBar {
+    display: flex !important;
+    
+    background-color: white;
+}
+
+.rsnapGrid .toolBar button {
+    margin-left: 10px;
+    font-size: .875rem;
+    line-height: 1.5;
+    border-radius: .2rem;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+    .rsnapGrid.toolBar button:focus {
+        border-color: #4e555b;
+        box-shadow: 0 0 0 0.2rem rgba(130,138,145,.5);
+    }
+
+
+
+#approvalsContainer {
+    max-width:none;
+    padding:0;
+}
+    #approvalsContainer .k-grid-toolbar {
+        background-color: white !important;
+    }
+  #approvalsContainer table {
+    font-size:11px !important;
+    }
+    #approvalsContainer .k-link {
+        font-size: 12px !important;
+        word-wrap: normal !important;
+        margin: auto !important;
+        padding: 10px 2px;
+        overflow: visible;
+    }
+    #approvalsContainer th.k-header {
+        padding: 0 !important;
+        word-wrap:normal;
+        white-space:pre-wrap;
+        word-break:break-word;
+        height: auto !important;
+        white-space:pre-wrap !important;
+    }
+
+    #approvalsContainer tr th:first-child,
+    #approvalsContainer tr td:first-child {
+        padding: 0 !important;
+        text-align:center;
+    }
+
+    #approvalsContainer .k-pager-nav {
+        margin:0px !important;
+        min-width:69px;
+    }
+
+
+#approvalsContainer .k-grid td{
+    padding: 4px 3px 4px 2px;
+    font-size: 0.98em;
+}
+

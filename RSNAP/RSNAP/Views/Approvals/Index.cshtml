@@ -8,9 +8,9 @@
 }
 <script>
     var loadingError = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.loadingError));
-</script>
 
-<div class="grid-container" id="approvalsContainer">
+</script>
+<div class="grid-containers">
     <div class="grid-row">
         <div class="grid-col-12">
             <script src="~/js/Approvals.js" asp-append-version="true"></script>
@@ -35,7 +35,7 @@
                     <label>Scheduled End Date</label>
                     <span class="k-invalid-msg" data-for="ScheduledEndDate"></span><br />
                     @(Html.Kendo().DatePicker()
-                                                     .Name("ScheduledEndtDate")
+                                                     .Name("ScheduledEndDate")
                                                      .Start(CalendarView.Year)
                                                      .Depth(CalendarView.Year)
                                                      .Format("MM/yyyy")
@@ -74,6 +74,8 @@
                                                                   .Name("FOApprovalStatusAvailable")
                                                                   .AutoBind(true)
                                                                   .HtmlAttributes(new { })
+                                                                  .DataValueField("Value")
+                                                                  .DataTextField("Text")
                                                                   .BindTo(Model.FOApprovalStatusAvailable)
                     )
                 </div>
@@ -83,7 +85,10 @@
                     @(Html.Kendo().DropDownList()
                                                                        .Name("ACOApprovalStatusAvailable")
                                                                        .AutoBind(true)
+                                                                       .DataValueField("text")
                                                                        .HtmlAttributes(new { })
+                                                                       .DataValueField("Value")
+                                                                       .DataTextField("Text")
                                                                        .BindTo(Model.ACOApprovalStatusAvailable)
                     )
                 </div>
@@ -93,7 +98,10 @@
                     @(Html.Kendo().DropDownList()
                                                                         .Name("NotificationStatusAvailable")
                                                                         .AutoBind(true)
+                                                                        .DataValueField("text")
                                                                         .HtmlAttributes(new { })
+                                                                        .DataValueField("Value")
+                                                                        .DataTextField("Text")
                                                                         .BindTo(Model.NotificationStatusAvailable)
                     )
                 </div>
@@ -115,86 +123,72 @@
             </div>
         </div>
 
-        <div id="approvalsGridWrapper" class="hide">
-            @*<div class="grid-row" id="grid-export-header">
-                    <div class="grid-col-2">
-                        <div class="text-bold">GSA Recon-NWTB</div>
-                    </div>
-                    <div class="grid-col-5">
-                        <div class="text-bold text-italic" id="reportTitleExportLabel">
-                        </div>
-                        <div class="text-italic">
-                            For Report Date: <span id="reportDateExportLabel"></span>
-                        </div>
-                    </div>
-                    <div class="grid-col-5">
-                        <div>*** FOR U.S. GOVERNMENT USE ONLY ***</div>
-                        <div>
-                            Run date: <span id="reportRunDateLabel"></span>
-                        </div>
-                    </div>
-                </div>*@
-            <div class="grid-row">
-                <div class="padding-bottom2">
-                    @(Html.Kendo().Grid<ApprovalsModel>()
-                        .Name("ApprovalsGrid")
-                        .Columns(columns =>
-                        {
-                            columns.Bound(c => c.ScheduledStartDate).Title("Scheduled Start Date");
-                            columns.Bound(c => c.ScheduledEndDate).Title("Scheduled End Date");
-                            columns.Bound(c => c.OrderNumber).Title("Order Number");
-                            columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number");
-                            columns.Bound(c => c.PDN).Title("PDN");
-                            columns.Bound(c => c.VendorName).Title("Vendor Name");
-                            columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
-                            columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
-                            columns.Bound(c => c.NotificationStatus).Title("Notification Status");
-                        })
-                        .Events(events => events.DataBound("onGridDataBound"))
-                        .Scrollable()
-                        .Navigatable(true)
-                        .Filterable()
-                        .Sortable()
-                        .AutoBind(false)
-                        .Pageable(pager => pager.PageSizes(new[] { 10, 20, 50, 100 })
-                        .Refresh(true)
-                        .ButtonCount(5))
-                        .DataSource(dataSource => dataSource
-                            .Ajax()
-                            //.Aggregates(aggregates =>
-                            //{
-                            //    aggregates.Add(p => p.TrialBalanceAmount).Sum();
-                            //})
-                            //.Group(groups => groups.Add(p => p.Fund))
-                            .Batch(true)
-                            .ServerOperation(false)
-                            .Events(events => events.Error("ajax_error_handler"))
-                            .Model(model => model.Id(a => a.Id))
-                            .Read(read => read.Action("Approvals_Read", "Approvals").Data("getGridParams"))
-                            .PageSize(20)
-                        )
-                    )
+    </div>
+</div>
 
-                </div>
-            </div>
-            <div class="grid-row">
-                <div class="col-md-12 padding-bottom-2">
-                    <div class="text-center padding-bottom-1">
-                        <button type="submit" id="SelectAll" class="btn" accesskey="a">Select All</button>
-                        <button type="submit" id="Approve" class="btn" accesskey="b">Approve</button>
-                        <button type="submit" id="Unapprove" class="btn" accesskey="u">Unapprove</button>
-                        <button type="submit" id="UnderReview" class="btn" accesskey="r">Under Review</button>
-                        <button type="submit" id="SaveToExcel" class="btn" accesskey="e">Save To Excel</button>
 
-                    </div>
-                    <div class="text-center padding-bottom-2">
-                        <div class="status">
-                        </div>
-                    </div>
-                </div>
+<div class="grid-containers" id="approvalsContainer">
+
+    <div id="approvalsGridWrapper" class="grid-row hide">
+        <div class="grid-col-12">
+            <div class="padding-bottom2 rsnapGrid">
+                @(Html.Kendo().Grid<ApprovalsModel>()
+.Name("ApprovalsGrid")
+.Columns(columns =>
+{
+columns.Select().Width(50);
+columns.Bound(c => c.ScheduleDate).Title("Schedule Date");
+columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number");
+columns.Bound(c => c.OrderNumber).Title("Order Number");
+columns.Bound(c => c.PDN).Title("PDN");
+columns.Bound(c => c.Pop).Title("POP");
+columns.Bound(c => c.Amount).Title("Amount");
+columns.Bound(c => c.VendorName).Title("Vendor Name");
+columns.Bound(c => c.VendorEmail).Title("Vendor Email");
+columns.Bound(c => c.COEmail).Title("CO Email");
+columns.Bound(c => c.Comments).Title("Comments");
+columns.Bound(c => c.NewComments).Title("New Comments").ClientTemplate("<textarea></textarea>");
+columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
+columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
+columns.Bound(c => c.FONote).Title("FO Notes");
+columns.Bound(c => c.ContractingOfficer).Title("Administrator Contracting Officer");
+columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
+columns.Bound(c => c.CONote).Title("ACO Notes");
+columns.Bound(c => c.NotificationStatus).Title("Notification Status");
+})
+.ToolBar(toolbar =>
+{
+toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\">Approve</button><button class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\">Under Review</button><button class=\"k-button k-primary\">Save To Excel</button></div>");
+})
+.Events(events => events.DataBound("onGridDataBound"))
+//.Scrollable(sc => sc.Height(540))
+.HtmlAttributes(new { style = "" })
+.Resizable(re => re.Columns(true))
+.Navigatable(true)
+.Filterable()
+.Sortable()
+.AutoBind(false)
+.Pageable(pager => pager.PageSizes(new[] { 10, 20, 50, 100 })
+.Refresh(true)
+.ButtonCount(5))
+.DataSource(dataSource => dataSource
+.Ajax()
+//.Aggregates(aggregates =>
+//{
+//    aggregates.Add(p => p.TrialBalanceAmount).Sum();
+//})
+//.Group(groups => groups.Add(p => p.Fund))
+.Batch(true)
+.ServerOperation(true)
+.Events(events => events.Error("ajax_error_handler"))
+.Model(model => model.Id(a => a.Id))
+.Read(read => read.Action("Approvals_Read", "Approvals").Data("getGridParams"))
+.PageSize(20)
+)
+                )
+                <div id="overlay"></div>
             </div>
         </div>
-        <div id="overlay"></div>
     </div>
 
 </div>
