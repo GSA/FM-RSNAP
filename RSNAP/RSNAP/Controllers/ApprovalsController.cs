@@ -13,6 +13,7 @@ using RSNAP.EFData;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace RSNAP.Controllers
 {
@@ -117,6 +118,158 @@ namespace RSNAP.Controllers
             data.Data= list;
             data.Total = pagerCount.FirstOrDefault().CountNum;
             return Json(data);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="ids">ProActId list</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult ApproveProcess(List<string> ids)
+        {
+            try
+            {
+                FillSessionInfo();
+                string roleText = null;
+                if (_ROLE == RoleEnum.FO.GetDescription())
+                {
+                    roleText = "FO";
+                }
+                else if (_ROLE == RoleEnum.CO.GetDescription())
+                {
+                    roleText = "CO";
+                }
+
+                var pendingROActions = _context.PendingroActions.Where(x => ids.Contains(x.ProActId)).ToList();
+                foreach (var pendingroAction in pendingROActions)
+                {
+                    if (roleText == "FO" && pendingroAction.NotificationStatus.ToUpper() == "NOT GENERATED")
+                    {
+                        pendingroAction.FundApprovalStatus = "Approved";
+                        pendingroAction.FundApprover = _Name;
+                    }
+                    if (roleText == "CO")
+                    {
+                        if (pendingroAction.FundApprovalStatus.ToUpper() == "APPROVED" && pendingroAction.NotificationStatus.ToUpper() == "NOT GENERATED")
+                        {
+                            pendingroAction.ContractingApprovalStatus = "Approved";
+                            pendingroAction.ContractingApprover = _Name;
+                        }
+
+                    }
+                }
+                int count = _context.SaveChanges();
+                return Json(count.ToString() + " record(s) approved by " + _ROLE);
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Json("No record approved by " + _ROLE);
+            }
+           
+        }
+
+        [HttpPost]
+        public JsonResult NnapprovedProcess(List<string> ids)
+        {
+            try
+            {
+                FillSessionInfo();
+                string roleText = null;
+                if (_ROLE == RoleEnum.FO.GetDescription())
+                {
+                    roleText = "FO";
+                }
+                else if (_ROLE == RoleEnum.CO.GetDescription())
+                {
+                    roleText = "CO";
+                }
+
+                var pendingROActions = _context.PendingroActions.Where(x => ids.Contains(x.ProActId)).ToList();
+                foreach (var pendingroAction in pendingROActions)
+                {
+                    if (roleText == "FO" && pendingroAction.NotificationStatus.ToUpper() == "NOT GENERATED")
+                    {
+                        // When ACO Approval Status is "Approved",change Status to Under Review
+                        if (pendingroAction.ContractingApprovalStatus.ToUpper() == "APPROVED")
+                        {
+                            pendingroAction.ContractingApprovalStatus = "Under Review";
+                        }
+                        pendingroAction.FundApprovalStatus = "Not Approved";
+                        pendingroAction.FundApprover = _Name;
+                        
+                    }
+                    if (roleText == "CO")
+                    {
+                        if (pendingroAction.FundApprovalStatus.ToUpper() == "APPROVED" && pendingroAction.NotificationStatus.ToUpper() == "NOT GENERATED")
+                        {
+                            pendingroAction.ContractingApprovalStatus = "Not Approved";
+                            pendingroAction.ContractingApprover = _Name;
+                        }
+
+                    }
+                }
+                int count = _context.SaveChanges();
+                return Json(count.ToString() + " record(s) unapproved by " + _ROLE);
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Json("No record unapproved by " + _ROLE);
+            }
+
+        }
+
+        [HttpPost]
+        public JsonResult UnderReviewProcess(List<string> ids)
+        {
+            try
+            {
+                FillSessionInfo();
+                string roleText = null;
+                if (_ROLE == RoleEnum.FO.GetDescription())
+                {
+                    roleText = "FO";
+                }
+                else if (_ROLE == RoleEnum.CO.GetDescription())
+                {
+                    roleText = "CO";
+                }
+
+                var pendingROActions = _context.PendingroActions.Where(x => ids.Contains(x.ProActId)).ToList();
+                foreach (var pendingroAction in pendingROActions)
+                {
+                    if (roleText == "FO" && pendingroAction.NotificationStatus.ToUpper() == "NOT GENERATED")
+                    {
+                        // When ACO Approval Status is "Approved",change Status to Under Review
+                        if (pendingroAction.ContractingApprovalStatus.ToUpper() == "APPROVED")
+                        {
+                            pendingroAction.ContractingApprovalStatus = "Under Review";
+                        }
+                        pendingroAction.FundApprovalStatus = "Under Review";
+                        pendingroAction.FundApprover = _Name;
+
+                    }
+                    if (roleText == "CO")
+                    {
+                        if (pendingroAction.FundApprovalStatus.ToUpper() == "APPROVED" && pendingroAction.NotificationStatus.ToUpper() == "NOT GENERATED")
+                        {
+                            pendingroAction.ContractingApprovalStatus = "Under Review";
+                            pendingroAction.ContractingApprover = _Name;
+                        }
+
+                    }
+                }
+                int count = _context.SaveChanges();
+                return Json(count.ToString() + " record(s) under review by " + _ROLE);
+            }
+            catch (System.Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return Json("No record under review by " + _ROLE);
+            }
+
         }
     }
 }

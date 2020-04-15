@@ -130,7 +130,7 @@ function Clear() {
     //if (kk1.getDate() != new Date(null).getDate()) {
     //    kk1.value(new Date(null)); kk1.trigger('change');
     //}
-   
+
     var kk2 = $("#ScheduledEndDate").data("kendoDatePicker");
     kk2.value(new Date(null)); kk2.trigger('change');
     $("#PDN").val('');
@@ -140,7 +140,7 @@ function Clear() {
     var dd2 = $("#NotificationStatusAvailable").data("kendoDropDownList");
     dd2.select(0); dd2.trigger('change');
     var dd3 = $("#ACOApprovalStatusAvailable").data("kendoDropDownList");
-    kk1.value(new Date(null)); kk1.trigger('change');   dd3.select(0); dd3.trigger('change');
+    kk1.value(new Date(null)); kk1.trigger('change'); dd3.select(0); dd3.trigger('change');
     //validator.hideMessages();
 
     $("#approvalsGridWrapper").addClass('hide');
@@ -169,6 +169,8 @@ function Search() {
 
         // Show grid wrapper if needed.
         $('#approvalsGridWrapper').removeClass('hide');
+
+        
 
         gridTrigger = 'searchButton';
 
@@ -219,7 +221,7 @@ function exportData() {
 function getGridParams() {
 
     //stubbed
-    
+
     var id = $('#OrderNumber').val();
     var IDV = $('#IDVContractNumber').val();
     var scheduledStartDate = $("#ScheduledStartDate").data("kendoDatePicker").value();
@@ -229,7 +231,7 @@ function getGridParams() {
     var VendorName = $("#VendorName").val();
     var aCOApprovalStatusAvailable = $("#ACOApprovalStatusAvailable").val();
     var notificationStatusAvailable = $("#NotificationStatusAvailable").val();
-   
+
     if (scheduledStartDate != null && scheduledStartDate.getDate() == new Date(null).getDate()) {
         scheduledStartDate = null;
     }
@@ -246,12 +248,14 @@ function getGridParams() {
         PDN: PDN,
         VendorName: VendorName,
         FOApprovalStatus: fOApprovalStatusAvailable,
-        ACOApprovalStatusAvailable: aCOApprovalStatusAvailable,
-        NotificationStatusAvailable: notificationStatusAvailable
+        ACOApprovalStatus: aCOApprovalStatusAvailable,
+        NotificationStatus: notificationStatusAvailable
         //date: date
     }
 }
-
+var dataList = [],
+    disabledItemIds = [] //ProActID
+    ;
 function onGridDataBound(e) {
 
     var grid = e.sender;
@@ -280,9 +284,24 @@ function onGridDataBound(e) {
     }
 
     gridTrigger = null;
+    dataList = e.sender._data;
+    console.log(dataList);
+    for (var i = 0; i < dataList.length; i++) {
+        if (dataList[i].CheckboxStatus === false) {
+            disabledItemIds.push(dataList[i].ProActID);
+            var _row = e.sender.tbody[0].rows[i];
+            e.sender.tbody[0].rows[i].childNodes[0].children[0].disabled = true;
+            $(_row).addClass('select-disabled');
+        }
+
+    }
 
     // Configure the grid to have 508-compliant pagination controls. We strip the '#' off the grid name.
     ConfigureKendoGridPaginationControlsFor508(gridName.substring(1, gridName.length));
+    $('.k-i-arrow-end-left').text('');
+    $('.k-i-arrow-60-left').text('');
+    $('.k-i-arrow-60-right').text('');
+    $('.k-i-arrow-end-right').text('');
 }
 
 // Show server errors.
@@ -301,6 +320,68 @@ function ajax_error_handler(e) {
         });
         GSA_alert(message);
     }
+}
+var selectedDataItems = [];
+function onChange(e) {
+    var selectedRows = this.select();
+    var currentList = [];
+    for (var i = 0; i < selectedRows.length; i++) {
+        //currentList.push({ "ProID": selectedRows[i].children[1].innerText, "ProActID": selectedRows[i].children[2].innerText})
+        currentList.push(selectedRows[i].children[2].innerText);
+    }
+    console.log(currentList);
+    selectedDataItems = currentList;
+}
+
+function getSelectedProActIds(selectedItems) {
+    console.log(selectedItems);
+    console.log(disabledItemIds);
+    var selectedProActIds = [];
+    for (var i = 0; i < selectedItems.length; i++) {
+        if (disabledItemIds.indexOf(selectedItems[i]) == -1) {
+            selectedProActIds.push(selectedItems[i]);
+        }
+    }
+    return selectedProActIds;
+}
+
+function Approve() {
+    var proActIds = getSelectedProActIds(this.selectedDataItems);
+    if (proActIds.length == 0) {
+        GSA_alert("No items selected.");
+        return;
+    }
+    $.post("/Approvals/ApproveProcess", { ids: proActIds }, function (data) {
+        GSA_alert(data);
+        Search();
+    });
+}
+
+function Unapprove() {
+    var proActIds = getSelectedProActIds(this.selectedDataItems);
+    if (proActIds.length == 0) {
+        GSA_alert("No items selected.");
+        return;
+    }
+    $.post("/Approvals/NnapprovedProcess", { ids: proActIds }, function (data) {
+        GSA_alert(data);
+        Search();
+    });
+}
+function UnderReview() {
+    var proActIds = getSelectedProActIds(this.selectedDataItems);
+    if (proActIds.length == 0) {
+        GSA_alert("No items selected.");
+        return;
+    }
+    $.post("/Approvals/UnderReviewProcess", { ids: proActIds }, function (data) {
+        GSA_alert(data);
+        Search();
+    });
+}
+function ExportExcel() {
+    var grid = $("#ApprovalsGrid").data("kendoGrid");
+    grid.saveAsExcel();
 }
 
     //function subtotalTemplate(sum, group, text) {

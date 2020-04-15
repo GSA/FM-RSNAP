@@ -6,6 +6,7 @@ for details on configuring this project to bundle and minify static web assets. 
     src: url(../lib/kendo-ui/styles/fonts/glyphs/WebComponentsIcons.eot);
     src: url(../lib/kendo-ui/styles/fonts/glyphs/WebComponentsIcons.woff) format('woff');
 }
+
 body {
     padding-top: 5px;
     padding-bottom: 20px;
@@ -102,6 +103,7 @@ label {
 
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {
+
     /* Hide captions */
     .carousel-caption {
         display: none;
@@ -110,7 +112,7 @@ label {
 
 /* Overlay for disabling full page when Data API is not running. */
 #overlay {
-    background-color: rgba(0,0,0,.2);
+    background-color: rgba(0, 0, 0, .2);
     z-index: 999;
     position: absolute;
     left: 0;
@@ -129,14 +131,16 @@ label {
     padding: .4in .3in;
     color: #333;
     background-color: #fff;
-    box-shadow: 0 5px 10px 0 rgba(0,0,0,.3);
+    box-shadow: 0 5px 10px 0 rgba(0, 0, 0, .3);
     box-sizing: border-box;
 }
 
 /* Kendo styles
 -------------------------------------------------- */
 
-span.k-autocomplete .k-state-default, span.k-autocomplete.k-state-focused, span.k-autocomplete .k-state-hover {
+span.k-autocomplete .k-state-default,
+span.k-autocomplete.k-state-focused,
+span.k-autocomplete .k-state-hover {
     height: 35px !important;
 }
 
@@ -155,36 +159,41 @@ span.k-autocomplete .k-state-default, span.k-autocomplete.k-state-focused, span.
     }
 
 span.k-dropdown, .k-dropdown .k-state-hover, .k-dropdown .k-state-default, .k-dropdown .k-state-focused {
-    height: 35px !important;
-    border: solid 1px #5B616B;
-    background-color: #fff;
+    /*height: 35px !important;*/
+    border: solid 1px rgb(169,169,169);
+    /*background-color: #fff;*/
 }
 
-.k-dropdown .k-state-default, .k-dropdown .k-state-hover, .k-dropdown .k-state-focused {
+.k-dropdown .k-state-default,
+.k-dropdown .k-state-hover,
+.k-dropdown .k-state-focused {
     background-color: transparent;
     border: none;
 }
 
-.k-dropdown .k-input, .k-dropdown .k-input k-state-hover, .k-dropdown .k-input k-state-focused {
+/*.k-dropdown .k-input, .k-dropdown .k-input k-state-hover, .k-dropdown .k-input k-state-focused {
     height: 30px !important;
     border: none;
-    /*padding-bottom: 12px;
-    background-color: #f5f5f5 !important;*/
-}
+   
+}*/
 /*.k-dropdown-wrap {
     padding-bottom: 12px;
     background-color: #f5f5f5 !important;
 }*/
-.k-dropdown .k-select .k-state-default, .k-dropdown .k-select .k-state-hover, .k-dropdown .k-select .k-state-focused {
+.k-dropdown .k-select .k-state-default,
+.k-dropdown .k-select .k-state-hover,
+.k-dropdown .k-select .k-state-focused {
     height: 30px !important;
     border: none;
 }
 
-.k-textbox, .k-textbox:focus {
+.k-textbox,
+.k-textbox:focus {
     border: solid 1px #5B616B;
 }
 
-    .k-textbox, .k-textbox:hover {
+    .k-textbox,
+    .k-textbox:hover {
         border: solid 1px #5B616B;
     }
 
@@ -198,8 +207,8 @@ span.k-dropdown, .k-dropdown .k-state-hover, .k-dropdown .k-state-default, .k-dr
 
 .k-datepicker {
     /*height: 35px !important;*/
-    border: solid 1px #5B616B;
-    background-color: #fff;
+    border: solid 1px rgb(169,169,169);
+    /* background-color: #fff;*/
 }
 
     .k-datepicker .k-input {
@@ -245,7 +254,8 @@ span.k-dropdown, .k-dropdown .k-state-hover, .k-dropdown .k-state-default, .k-dr
         text-decoration: none;
     }
 
-.k-grid-header .k-header, .k-grid-header .k-link:link {
+.k-grid-header .k-header,
+.k-grid-header .k-link:link {
     background-color: #f1f1f1;
     color: #212121;
     font-family: "Source Sans Pro Web", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
@@ -270,7 +280,8 @@ div.k-dropzone em {
 
 .k-widget.k-tooltip-validation.k-invalid-msg {
     background-color: #ffffff;
-    color: #b50909; /* uswds error text color */
+    color: #b50909;
+    /* uswds error text color */
     border: solid 1px #b50909;
     padding: 5px;
     margin-bottom: 5px;
@@ -339,7 +350,6 @@ h3 {
     display: none;
 }
 
-
 .redWarningCopy {
     color: #cc0000;
 }
@@ -361,11 +371,11 @@ h3 {
     color: red;
 }
 
-
-
 /* Replace pager glyph icons after 508 formatting. */
-.k-i-arrow-end-left::before, .k-i-arrow-end-right::before,
-.k-i-arrow-60-left::before, .k-i-arrow-60-right::before {
+.k-i-arrow-end-left::before,
+.k-i-arrow-end-right::before,
+.k-i-arrow-60-left::before,
+.k-i-arrow-60-right::before {
     font-family: 'WebComponentsIcons';
 }
 
@@ -383,14 +393,17 @@ h3 {
 .usa-footer-contact_info:hover {
     text-decoration: none;
 }
+
 .usa-header {
     border-bottom: 1px solid #d5d8db;
     margin-bottom: 1rem;
 }
+
 @media all and (min-width: 64em) {
-    .usa-logo{
+    .usa-logo {
         margin-top: 1rem;
     }
+
     .usa-header--basic .usa-navbar {
         width: 50%;
     }
@@ -416,9 +429,9 @@ h3 {
         padding-top: 30px;
     }
 }
+
 .toolBar {
     display: flex !important;
-    
     background-color: white;
 }
 
@@ -433,56 +446,109 @@ h3 {
     vertical-align: middle;
     user-select: none;
     border: 1px solid transparent;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
     .rsnapGrid.toolBar button:focus {
         border-color: #4e555b;
-        box-shadow: 0 0 0 0.2rem rgba(130,138,145,.5);
+        box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, .5);
     }
 
-
-
 #approvalsContainer {
-    max-width:none;
-    padding:0;
+    max-width: none;
+    padding: 0;
 }
+
     #approvalsContainer .k-grid-toolbar {
         background-color: white !important;
     }
-  #approvalsContainer table {
-    font-size:11px !important;
+
+    #approvalsContainer table {
+        font-size: 11px !important;
     }
+
     #approvalsContainer .k-link {
         font-size: 12px !important;
         word-wrap: normal !important;
         margin: auto !important;
         padding: 10px 2px;
         overflow: visible;
+        background-color: #ffffff;
+        font-weight: 700;
+        color: #495057;
     }
+
     #approvalsContainer th.k-header {
         padding: 0 !important;
-        word-wrap:normal;
-        white-space:pre-wrap;
-        word-break:break-word;
+        word-wrap: normal;
+        white-space: pre-wrap;
+        word-break: break-word;
         height: auto !important;
-        white-space:pre-wrap !important;
+        white-space: pre-wrap !important;
+        font-weight: 700;
+        color: #495057;
+        border: 1px solid #e9ecef;
+        border-bottom-width: 5px;
+        background-color: #ffffff;
     }
 
     #approvalsContainer tr th:first-child,
     #approvalsContainer tr td:first-child {
         padding: 0 !important;
-        text-align:center;
+        text-align: center;
     }
 
     #approvalsContainer .k-pager-nav {
-        margin:0px !important;
-        min-width:69px;
+        margin: 0px !important;
+        min-width: 69px;
     }
 
 
-#approvalsContainer .k-grid td{
-    padding: 4px 3px 4px 2px;
-    font-size: 0.98em;
+    #approvalsContainer .k-grid td {
+        padding: 4px 3px 4px 2px;
+        font-size: 0.98em;
+    }
+
+.k-no-text {
+    color: #999999 !important;
+    background-color: #999999 !important;
 }
 
+#approvalsContainer .k-dropdown {
+}
+
+:disabled.k-checkbox + .k-checkbox-label::before {
+    background-color: #999999 !important;
+    border-color: #999999 !important;
+}
+
+:disabled.k-checkbox + .k-checkbox-label::after {
+    content: "";
+}
+
+.rsnap-grid {
+    color: #000 !important;
+}
+
+    .rsnap-grid td .rsnap-grid th {
+        border: 1px solid #e9ecef;
+    }
+
+.k-grid tbody tr:hover td {
+    background-color: #e0f3ff !important;
+}
+
+.k-grid tr td {
+    background-color: #fff !important;
+    color: #000 !important;
+}
+
+.k-grid tr.k-alt td {
+    background-color: rgba(0, 0, 0, 0.1) !important;
+    color: #000 !important;
+}
+
+#approvalsContainer .k-state-selected:not(.select-disabled) td {
+    background-color: rgb(108, 117, 125) !important;
+    color: #fff !important;
+}

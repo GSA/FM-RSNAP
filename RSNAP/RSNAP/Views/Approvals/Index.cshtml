@@ -136,36 +136,41 @@
 .Name("ApprovalsGrid")
 .Columns(columns =>
 {
-columns.Select().Width(50);
-columns.Bound(c => c.ScheduleDate).Title("Schedule Date");
-columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number");
-columns.Bound(c => c.OrderNumber).Title("Order Number");
-columns.Bound(c => c.PDN).Title("PDN");
-columns.Bound(c => c.Pop).Title("POP");
-columns.Bound(c => c.Amount).Title("Amount");
-columns.Bound(c => c.VendorName).Title("Vendor Name");
-columns.Bound(c => c.VendorEmail).Title("Vendor Email");
-columns.Bound(c => c.COEmail).Title("CO Email");
-columns.Bound(c => c.Comments).Title("Comments");
-columns.Bound(c => c.NewComments).Title("New Comments").ClientTemplate("<textarea></textarea>");
-columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
-columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
-columns.Bound(c => c.FONote).Title("FO Notes");
-columns.Bound(c => c.ContractingOfficer).Title("Administrator Contracting Officer");
-columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
-columns.Bound(c => c.CONote).Title("ACO Notes");
-columns.Bound(c => c.NotificationStatus).Title("Notification Status");
+    columns.Select().Width(50);
+    columns.Bound(c => c.ProID).Hidden();
+    columns.Bound(c => c.ProActID).Hidden();
+    columns.Bound(c => c.ScheduleDate).Title("Schedule Date");
+    columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number");
+    columns.Bound(c => c.OrderNumber).Title("Order Number");
+    columns.Bound(c => c.PDN).Title("PDN");
+    columns.Bound(c => c.Pop).Title("POP");
+    columns.Bound(c => c.Amount).Title("Amount");
+    columns.Bound(c => c.VendorName).Title("Vendor Name");
+    columns.Bound(c => c.VendorEmail).Title("Vendor Email");
+    columns.Bound(c => c.COEmail).Title("CO Email");
+    columns.Bound(c => c.Comments).Title("Comments");
+    columns.Bound(c => c.NewComments).Title("New Comments").ClientTemplate("<textarea></textarea>");
+    columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
+    columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
+    columns.Bound(c => c.FONote).Title("FO Notes");
+    columns.Bound(c => c.ContractingOfficer).Title("Administrator Contracting Officer");
+    columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
+    columns.Bound(c => c.CONote).Title("ACO Notes");
+    columns.Bound(c => c.NotificationStatus).Title("Notification Status");
 })
 .ToolBar(toolbar =>
 {
-toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\">Approve</button><button class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\">Under Review</button><button class=\"k-button k-primary\">Save To Excel</button></div>");
+    toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\" onclick=\"Approve()\" >Approve</button><button onclick=\"Unapprove()\" class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\" onclick=\"UnderReview()\">Under Review</button><button class=\"k-button k-primary\"  onclick=\"ExportExcel()\" >Save To Excel</button></div>");
 })
-.Events(events => events.DataBound("onGridDataBound"))
+.Events(events => events.DataBound("onGridDataBound").Change("onChange"))
+.Excel(excel => excel
+        .FileName(string.Concat("RSNAP_",DateTime.Now.ToShortDateString(), ".xls"))
+
+    )
 //.Scrollable(sc => sc.Height(540))
-.HtmlAttributes(new { style = "" })
+.HtmlAttributes(new { @class = "rsnap-grid" })
 .Resizable(re => re.Columns(true))
 .Navigatable(true)
-.Filterable()
 .Sortable()
 .AutoBind(false)
 .Pageable(pager => pager.PageSizes(new[] { 10, 20, 50, 100 })

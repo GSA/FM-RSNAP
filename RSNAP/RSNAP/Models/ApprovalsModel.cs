@@ -9,6 +9,8 @@ namespace RSNAP.Models
     {
         [NotMapped]
         public int Id { get; set; }
+        public string ProID { get; set; }
+        public string ProActID { get; set; }
         public string ScheduledStartDate { get; set; }
         public string ScheduledEndDate { get; set; }
         public string OrderNumber { get; set; }
@@ -26,6 +28,7 @@ namespace RSNAP.Models
         
         public string FONote { get; set; }
         public string ContractingOfficer { get; set; }
+        public bool CheckboxStatus { get; set; }
         [NotMapped]
         public string Pop { get 
             {
