@@ -105,7 +105,7 @@ namespace RSNAP.EFData
                 }
             }
         }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
