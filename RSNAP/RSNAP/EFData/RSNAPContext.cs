@@ -88,7 +88,8 @@ namespace RSNAP.EFData
                         // Format the final connection string.
                         if (success)
                         {
-                            connectionString = _utilityConfigService.FormatMySQLConnectionStringWithSSL(connectionString, currentUsername, password);
+                            connectionString = _utilityConfigService.FormatMySQLConnectionStringWithSSL(connectionString, currentUsername, password,
+                                "certificates", "RSNAP");
                             if (connectionString == "") success = false;
                         }
                     }

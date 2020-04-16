@@ -54,6 +54,11 @@ namespace RSNAP
             services.AddSingleton<IFMUtilityPasswordService>(client => new FMUtilityPasswordService(client.GetService<ILogger<FMUtilityPasswordService>>(),
                     client.GetService<IHttpClientFactory>()));
 
+            // Initialize the Utility audit service as a singleton.
+            services.AddSingleton<IFMUtilityAuditService>(client => new FMUtilityAuditService(client.GetService<ILogger<FMUtilityAuditService>>(),
+                client.GetService<IFMUtilityConfigService>(), client.GetService<IFMUtilityPasswordService>(), 
+                Configuration["Databases:Audit:Database"], Configuration["Databases:Audit:Username"]));
+
             // Initialize the FM Data API service as a singleton.
             services.AddHttpClient<IFMUtilityDataAPIService>("FMUtilityDataAPIService", client =>
             {
