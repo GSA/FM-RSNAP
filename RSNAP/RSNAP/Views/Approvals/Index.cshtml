@@ -24,9 +24,7 @@
                     <span class="k-invalid-msg" data-for="ScheduledStartDate"></span><br />
                     @(Html.Kendo().DatePicker()
                                                      .Name("ScheduledStartDate")
-                                                     .Start(CalendarView.Year)
-                                                     .Depth(CalendarView.Year)
-                                                     .Format("MM/yyyy")
+                                                     .ParseFormats(new string[] { "MM/dd/yyyy" })
                                                      .DateInput(true)
                                                      .HtmlAttributes(new { @placeholder = "Scheduled Start Date" })
                     )
@@ -36,9 +34,7 @@
                     <span class="k-invalid-msg" data-for="ScheduledEndDate"></span><br />
                     @(Html.Kendo().DatePicker()
                                                      .Name("ScheduledEndDate")
-                                                     .Start(CalendarView.Year)
-                                                     .Depth(CalendarView.Year)
-                                                     .Format("MM/yyyy")
+                                                     .ParseFormats(new string[] { "MM/dd/yyyy" })
                                                      .DateInput(true)
                                                      .HtmlAttributes(new { @placeholder = "Scheduled End Date" })
                     )
