@@ -6,9 +6,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RSNAP *** FOR U.S. GOVERNMENT USE ONLY ***</title>
-    <link href="~/lib/kendo-ui/styles/kendo.common-material.min.css" rel="stylesheet" />
-    <link href="~/lib/kendo-ui/styles/kendo.mobile.all.min.css" rel="stylesheet" />
-    <link href="~/lib/kendo-ui/styles/kendo.material.min.css" rel="stylesheet" />
+    <link href="~/lib/kendo-ui/styles/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/lib/kendo-ui/styles/kendo.rtl.min.css" rel="stylesheet" />
+    <link href="~/lib/kendo-ui/styles/kendo.default-v2.min.css" rel="stylesheet" />
+    
+    @*<link href="~/lib/kendo-ui/styles/kendo.mobile.all.min.css" rel="stylesheet" />*@
+    @*<link href="~/lib/kendo-ui/styles/kendo.material.min.css" rel="stylesheet" />*@
     <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
 
     <environment include="Development">
@@ -16,7 +19,6 @@
         <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     </environment>
     <environment exclude="Development">
-        @* Remove BootstrapCDN *@
         <link rel="stylesheet" href="~/uswds-2.3.1/css/uswds.min.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
     </environment>
@@ -73,7 +75,7 @@
     @*Body section*@
 
     <header class="usa-header usa-header--basic">
-        <div class="usa-nav-container">
+        <div class="usa-nav-container container-overwrite">
             <div class="usa-navbar">
                 <div class="usa-logo">
                     <img class="usa-header-slim-logo-img" src="~/images/gsa/nav-logo.jpg" alt="" hspace="5">
@@ -120,11 +122,11 @@
     <div class="usa-overlay"></div>
     <main id="main-content"></main>
 
-    <div class="container body-content">
+    <div class=" body-content">
         @RenderBody()
         <hr />
         <footer class="usa-footer usa-footer--slim">
-            <div class="grid-container usa-footer__return-to-top">
+            <div class="grid-container container-overwrite usa-footer__return-to-top">
                 <a href="#top">Return to top</a>
             </div>
             <div class="usa-footer__primary-section">

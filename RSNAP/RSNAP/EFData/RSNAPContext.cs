@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using RSNAP.EFModels;
+using RSNAP.Models;
 
 namespace RSNAP.EFData
 {
@@ -76,11 +77,11 @@ namespace RSNAP.EFData
                             if (string.IsNullOrEmpty(currentUsername)) success = false;
                         }
 
-                        // Resolve the password for this database/username.
+                        // Resolve the password for this database/username. Cast to upper.
                         var password = "";
                         if (success)
                         {
-                            password = _utilityPasswordService.RetrievePassword(databaseName, currentUsername).Result;
+                            password = _utilityPasswordService.RetrievePassword(databaseName.ToUpper(), currentUsername.ToUpper()).Result;
                             if (string.IsNullOrEmpty(password)) success = false;
                         }
 
@@ -103,9 +104,10 @@ namespace RSNAP.EFData
                 }
             }
         }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<PendingroActions>(entity =>
             {
                 entity.HasKey(e => e.ProActId)
@@ -369,7 +371,9 @@ namespace RSNAP.EFData
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
             });
-
+            
+            modelBuilder.Entity<ApprovalsModel>().HasNoKey(); 
+            modelBuilder.Entity<PagerCount>().HasNoKey();
             OnModelCreatingPartial(modelBuilder);
         }
 
