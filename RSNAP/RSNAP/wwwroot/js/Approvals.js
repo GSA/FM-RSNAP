@@ -124,15 +124,15 @@ function Clear() {
     $('#OrderNumber').val('');
     $('#IDVContractNumber').val('');
     var kk1 = $("#ScheduledStartDate").data("kendoDatePicker");
-    console.log(kk1);
-
-    kk1.value(new Date(null)); kk1.trigger('change');
-    //if (kk1.getDate() != new Date(null).getDate()) {
-    //    kk1.value(new Date(null)); kk1.trigger('change');
-    //}
+    if (kk1.getDate() != null) {
+        kk1.value(new Date(null)); kk1.trigger('change');
+    }
 
     var kk2 = $("#ScheduledEndDate").data("kendoDatePicker");
-    kk2.value(new Date(null)); kk2.trigger('change');
+    if (kk2.getDate() != null) {
+        kk2.value(new Date(null)); kk2.trigger('change');
+    }
+    
     $("#PDN").val('');
     $("#VendorName").val('');
     var dd1 = $("#FOApprovalStatusAvailable").data("kendoDropDownList");

@@ -14,6 +14,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using MySql.Data.MySqlClient;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 
 namespace RSNAP.Controllers
 {
@@ -83,7 +84,7 @@ namespace RSNAP.Controllers
                 roleText = "RO";
             }
 
-            List<PagerCount> pagerCount = _context.Set<PagerCount>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@isCount)"
+            List<PagerCount> pagerCount = _context.Set<PagerCount>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@isCount)"
                , new MySqlParameter("@PageIndex", request.Page)
                , new MySqlParameter("@PageSize", request.PageSize)
                , new MySqlParameter("@PopStartDate", searchModel.ScheduledStartDate)
@@ -97,8 +98,11 @@ namespace RSNAP.Controllers
                , new MySqlParameter("@NotificationStatus", searchModel.NotificationStatus)
                , new MySqlParameter("@isDefaultList", searchModel.isDefaultList)
                , new MySqlParameter("@Role", roleText)
+               , new MySqlParameter("@SortBy",(request.Sorts.Count>0 ? request.Sorts.FirstOrDefault().Member:null))
+               , new MySqlParameter("@SortDirection", (request.Sorts.Count > 0 ? request.Sorts.FirstOrDefault().SortDirection.ToString() : null))
                , new MySqlParameter("@isCount", true)).ToList();
-            list = _context.Set<ApprovalsModel>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@isCount)"
+
+            list = _context.Set<ApprovalsModel>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@isCount)"
                , new MySqlParameter("@PageIndex", request.Page)
                , new MySqlParameter("@PageSize", request.PageSize)
                , new MySqlParameter("@PopStartDate", searchModel.ScheduledStartDate)
@@ -112,8 +116,10 @@ namespace RSNAP.Controllers
                , new MySqlParameter("@NotificationStatus", searchModel.NotificationStatus)
                , new MySqlParameter("@isDefaultList", searchModel.isDefaultList)
                , new MySqlParameter("@Role", roleText)
+               , new MySqlParameter("@SortBy", (request.Sorts.Count > 0 ? request.Sorts.FirstOrDefault().Member : null))
+               , new MySqlParameter("@SortDirection", (request.Sorts.Count > 0 ? request.Sorts.FirstOrDefault().SortDirection.ToString() : null))
                , new MySqlParameter("@isCount", false)).ToList();
-
+             
             DataSourceResult data = new DataSourceResult();
             data.Data= list;
             data.Total = pagerCount.FirstOrDefault().CountNum;

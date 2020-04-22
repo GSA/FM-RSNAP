@@ -29,11 +29,7 @@ namespace RSNAP.Models
         public string FONote { get; set; }
         public string ContractingOfficer { get; set; }
         public bool CheckboxStatus { get; set; }
-        [NotMapped]
-        public string Pop { get 
-            {
-                return string.Concat(ScheduledStartDate, "~", ScheduledEndDate);
-            } }
+        public string Pop { set; get; }
         [NotMapped]
         public string Comments { set; get; }
         [NotMapped]
