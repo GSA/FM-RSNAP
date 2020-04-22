@@ -70,7 +70,7 @@
             logoutInterval = setInterval(function() {
                     counter--;
                     if (counter < 0) {
-                       window.location.href='@Url.Action("LogoutAsync", "Login")'
+                       window.location.href='@Url.Action("SessionTimeoutAsync", "Login")'
                     } else {
                         var m = Math.floor(counter / 60);
                         var s = Math.floor(counter % 60);

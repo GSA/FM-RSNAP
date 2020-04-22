@@ -12,12 +12,17 @@
     "RedirectURL": "<insert redirect URL from SecureAuth metadata",
     "TokenName": "<set a token name that makes sense for your app>",
     "ValidationKey": "<insert the validation key that the SecureAuth team sent you>",
-    "DecryptionKey": "<insert the decryption key that the SecureAuth team sent you>"
+    "DecryptionKey": "<insert the decryption key that the SecureAuth team sent you>",
+    "UseCompatibilityMode20SP2": true
   },
   "Databases": {
     "RSNAP": {
       "Database": "RSNAPDEV",
       "Username": "RSNAPAPP"
+    },
+    "Audit": {
+      "Database": "FMUTILITYDEV",
+      "Username": "FMUTILITY_USER"
     }
   },
   "FMDataAPIURL": "https://localhost:50002",

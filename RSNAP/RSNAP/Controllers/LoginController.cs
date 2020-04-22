@@ -24,16 +24,18 @@ namespace RSNAP.Controllers
         private readonly ILogger<LoginController> _logger;
         private readonly IStringLocalizer<SharedResource> _sharedLocalizer;
         private readonly IFMUtilityDataAPIService _dataAPIService;
+        private readonly IFMUtilityAuditService _auditService;
 
         public LoginController(IWebHostEnvironment env, IConfiguration configuration,
             ILogger<LoginController> logger, IStringLocalizer<SharedResource> sharedLocalizer,
-            IFMUtilityDataAPIService dataAPIService)
+            IFMUtilityDataAPIService dataAPIService, IFMUtilityAuditService auditService)
         {
             _env = env;
             _configuration = configuration;
             _logger = logger;
             _sharedLocalizer = sharedLocalizer;
             _dataAPIService = dataAPIService;
+            _auditService = auditService;
         }
 
         [Route("Login/LoginAsync")]
@@ -66,7 +68,26 @@ namespace RSNAP.Controllers
         public async Task<IActionResult> LogoutAsync()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // Audit logout.
+            if (User.Identity.IsAuthenticated)
+            {
+                await _auditService.WriteUserEvent("RSNAP", User.Identity.Name, UserEvent.Logoff);
+            }
+
             return RedirectToAction("Index", "Home");
+        }
+
+        [Route("Login/SessionTimeoutAsync")]
+        public async Task<IActionResult> SessionTimeoutAsync()
+        {
+            // Audit logout.
+            if (User.Identity.IsAuthenticated)
+            {
+                await _auditService.WriteUserEvent("RSNAP", User.Identity.Name, UserEvent.SessionTimeout);
+            }
+
+            return RedirectToAction("LogoutAsync", "Login");
         }
 
         public async Task<IActionResult> ExternalLoginCallback()
@@ -83,6 +104,13 @@ namespace RSNAP.Controllers
                 var validationKey = _configuration["SecureAuth:ValidationKey"];
                 var decryptionKey = _configuration["SecureAuth:DecryptionKey"];
 
+                // Default to Framework45 for compatibility mode.
+                CompatibilityMode compatibilityMode = CompatibilityMode.Framework45;
+                if (_configuration.GetValue<bool>("SecureAuth:UseCompatibilityMode20SP2"))
+                {
+                    compatibilityMode = CompatibilityMode.Framework20SP2;
+                }
+
                 if (validationKey == null || decryptionKey == null)
                 {
                     ViewData[viewDataErrorKey] = "SecureAuth keys missing from configuration file.";
@@ -94,7 +122,7 @@ namespace RSNAP.Controllers
 
                     try
                     {
-                        var legacyFormsAuthenticationTicketEncryptor = new LegacyFormsAuthenticationTicketEncryptor(decryptionKeyBytes, validationKeyBytes, ShaVersion.Sha1);
+                        var legacyFormsAuthenticationTicketEncryptor = new LegacyFormsAuthenticationTicketEncryptor(decryptionKeyBytes, validationKeyBytes, ShaVersion.Sha1, compatibilityMode);
                         FormsAuthenticationTicket decryptedTicket = legacyFormsAuthenticationTicketEncryptor.DecryptCookie(token);
 
                         // If already authenticated and usernames don't match, log out.
@@ -150,12 +178,19 @@ namespace RSNAP.Controllers
                     // Re-Authenticate using the identity.
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
+                    // Audit successful logon.
+                    await _auditService.WriteUserEvent("RSNAP", User.Identity.Name, UserEvent.LogonSuccessful);
+
                     return RedirectToAction("LoggedIn", "Home");
                 }
                 else
                 {
                     // No roles found. Log out.
                     _logger.LogInformation("User " + User.Identity.Name + " has no valid roles.");
+
+                    // Audit failed logon.
+                    await _auditService.WriteUserEvent("RSNAP", User.Identity.Name, UserEvent.LogonFailed);
+                    
                     return RedirectToAction("LogoutAsync", "Login");
                 }
             }

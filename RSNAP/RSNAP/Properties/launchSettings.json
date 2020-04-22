@@ -12,7 +12,7 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "APPSETTINGS_DIRECTORY": "E:\\Developers\\JeffG\\appsettings",
+        "APPSETTINGS_DIRECTORY": "E:\\Developers\\WillD\\appsettings",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
