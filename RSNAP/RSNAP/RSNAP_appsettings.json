@@ -25,6 +25,7 @@
       "Username": "FMUTILITY_USER"
     }
   },
+  "FMDataAPIKey": "XXXXXX",
   "FMDataAPIURL": "https://localhost:50002",
   "CookieAuthentication": {
     "ExpireMinutes": "6",

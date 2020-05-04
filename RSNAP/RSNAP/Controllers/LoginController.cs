@@ -165,8 +165,7 @@ namespace RSNAP.Controllers
             // Use our utility Data API service to check for roles.
             try
             {
-                var caamRoles = _dataAPIService.GetCAAMRoles("RSNAP", User.Identity.Name,
-                    Request.Cookies[_configuration["SharedCookieName"]]);
+                var caamRoles = _dataAPIService.GetCAAMRolesWithKey("RSNAP", User.Identity.Name, _configuration["FMDataAPIKey"]);
 
                 if (caamRoles.Count > 0)
                 {
@@ -197,6 +196,10 @@ namespace RSNAP.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+
+                // Audit failed logon.
+                await _auditService.WriteUserEvent("RSNAP", User.Identity.Name, UserEvent.LogonFailed);
+
                 return RedirectToAction("LogoutAsync", "Login");
             }
         }
