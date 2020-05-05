@@ -60,10 +60,11 @@ namespace RSNAP
                 Configuration["Databases:Audit:Database"], Configuration["Databases:Audit:Username"]));
 
             // Initialize the FM Data API service as a singleton.
+            var dataAPIURL = Configuration["FMDataAPIURL"];
             services.AddHttpClient<IFMUtilityDataAPIService>("FMUtilityDataAPIService", client =>
             {
                 // Tell the service where we expect the FM Data API to be found.
-                client.BaseAddress = new Uri(Configuration["FMDataAPIURL"]);
+                client.BaseAddress = new Uri(dataAPIURL);
             })
                 .ConfigurePrimaryHttpMessageHandler(() =>
                 {
@@ -76,8 +77,7 @@ namespace RSNAP
                     return handler;
                 });
             services.AddSingleton<IFMUtilityDataAPIService>(client => new FMUtilityDataAPIService(client.GetService<ILogger<FMUtilityDataAPIService>>(),
-                client.GetService<IConfiguration>(), client.GetService<IHttpClientFactory>(),
-                _hostingEnvironment.IsDevelopment()));
+                client.GetService<IConfiguration>(), client.GetService<IHttpClientFactory>(), dataAPIURL.Contains("localhost")));
 
             // Set up RSNAP db context for dependency injection.
             // Note: We don't specify connection string here. That is done in the context itself, because

@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GSA.FM.Utility.Core.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -15,30 +19,44 @@ namespace RSNAP.EFData
         private readonly ILogger<RSNAPContext> _logger;
         private readonly IFMUtilityPasswordService _utilityPasswordService;
         private readonly IFMUtilityConfigService _utilityConfigService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly List<String> _unauditedTables = new List<string>()
+        {
+            "SYS_DATA_AUDIT", "SysDataAudit"
+        };
 
         public RSNAPContext(IConfiguration configuration, ILogger<RSNAPContext> logger,
-            IFMUtilityPasswordService utilityPasswordService, IFMUtilityConfigService utilityConfigService)
+            IFMUtilityPasswordService utilityPasswordService, IFMUtilityConfigService utilityConfigService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
             _logger = logger;
             _utilityPasswordService = utilityPasswordService;
             _utilityConfigService = utilityConfigService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public RSNAPContext(DbContextOptions<RSNAPContext> options, IConfiguration configuration, ILogger<RSNAPContext> logger,
-            IFMUtilityPasswordService utilityPasswordService, IFMUtilityConfigService utilityConfigService)
+            IFMUtilityPasswordService utilityPasswordService, IFMUtilityConfigService utilityConfigService,
+            IHttpContextAccessor httpContextAccessor)
             : base(options)
         {
             _configuration = configuration;
             _logger = logger;
             _utilityPasswordService = utilityPasswordService;
             _utilityConfigService = utilityConfigService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public virtual DbSet<PendingroActions> PendingroActions { get; set; }
+        public virtual DbSet<PendingroActionsSeq> PendingroActionsSeq { get; set; }
         public virtual DbSet<PendingroApprovalLog> PendingroApprovalLog { get; set; }
+        public virtual DbSet<PendingroApprovalLogSeq> PendingroApprovalLogSeq { get; set; }
         public virtual DbSet<PendingroCommentLog> PendingroCommentLog { get; set; }
+        public virtual DbSet<PendingroCommentLogSeq> PendingroCommentLogSeq { get; set; }
         public virtual DbSet<Pendingros> Pendingros { get; set; }
+        public virtual DbSet<PendingrosSeq> PendingrosSeq { get; set; }
+        public virtual DbSet<SysDataAudit> SysDataAudit { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -123,8 +141,9 @@ namespace RSNAP.EFData
                     .HasCollation("utf8mb4_unicode_ci");
 
                 entity.Property(e => e.ContractingApprovalStatus)
-                    .HasColumnName("contracting_approval_status")
+                    .HasColumnName("CONTRACTING_APPROVAL_STATUS")
                     .HasColumnType("varchar(20)")
+                    .HasDefaultValueSql("'Not Reviewed'")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
 
@@ -141,8 +160,9 @@ namespace RSNAP.EFData
                     .HasCollation("utf8mb4_unicode_ci");
 
                 entity.Property(e => e.FundApprovalStatus)
-                    .HasColumnName("fund_approval_status")
+                    .HasColumnName("FUND_APPROVAL_STATUS")
                     .HasColumnType("varchar(20)")
+                    .HasDefaultValueSql("'Not Reviewed'")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
 
@@ -163,8 +183,9 @@ namespace RSNAP.EFData
                     .HasColumnType("datetime");
 
                 entity.Property(e => e.NotificationStatus)
-                    .HasColumnName("notification_status")
+                    .HasColumnName("NOTIFICATION_STATUS")
                     .HasColumnType("varchar(20)")
+                    .HasDefaultValueSql("'Not Generated'")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
 
@@ -174,6 +195,15 @@ namespace RSNAP.EFData
                     .HasColumnType("varchar(10)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
+            });
+
+            modelBuilder.Entity<PendingroActionsSeq>(entity =>
+            {
+                entity.ToTable("pendingro_actions_seq");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<PendingroApprovalLog>(entity =>
@@ -225,6 +255,15 @@ namespace RSNAP.EFData
                     .HasCollation("utf8mb4_unicode_ci");
             });
 
+            modelBuilder.Entity<PendingroApprovalLogSeq>(entity =>
+            {
+                entity.ToTable("pendingro_approval_log_seq");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
+            });
+
             modelBuilder.Entity<PendingroCommentLog>(entity =>
             {
                 entity.HasKey(e => e.ProCommentId)
@@ -260,6 +299,15 @@ namespace RSNAP.EFData
                     .HasColumnType("varchar(120)")
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
+            });
+
+            modelBuilder.Entity<PendingroCommentLogSeq>(entity =>
+            {
+                entity.ToTable("pendingro_comment_log_seq");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
             });
 
             modelBuilder.Entity<Pendingros>(entity =>
@@ -372,12 +420,241 @@ namespace RSNAP.EFData
                     .HasCharSet("utf8mb4")
                     .HasCollation("utf8mb4_unicode_ci");
             });
-            
+
+            modelBuilder.Entity<PendingrosSeq>(entity =>
+            {
+                entity.ToTable("pendingros_seq");
+
+                entity.Property(e => e.Id)
+                    .HasColumnName("id")
+                    .HasColumnType("int(11)");
+            });
+
+            modelBuilder.Entity<SysDataAudit>(entity =>
+            {
+                entity.ToTable("SYS_DATA_AUDIT");
+
+                entity.Property(e => e.SysDataAuditId)
+                    .HasColumnName("SYS_DATA_AUDIT_ID")
+                    .HasColumnType("int(11)");
+
+                entity.Property(e => e.ChangingColumn)
+                    .IsRequired()
+                    .HasColumnName("CHANGING_COLUMN")
+                    .HasColumnType("varchar(30)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.ChangingTable)
+                    .IsRequired()
+                    .HasColumnName("CHANGING_TABLE")
+                    .HasColumnType("varchar(30)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.CreatedBy)
+                    .IsRequired()
+                    .HasColumnName("CREATED_BY")
+                    .HasColumnType("varchar(50)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnName("CREATED_DATE")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.ExternalUserId)
+                    .IsRequired()
+                    .HasColumnName("EXTERNAL_USER_ID")
+                    .HasColumnType("varchar(250)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.NewValue)
+                    .HasColumnName("NEW_VALUE")
+                    .HasColumnType("text")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.OldValue)
+                    .HasColumnName("OLD_VALUE")
+                    .HasColumnType("text")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.RecordPk)
+                    .IsRequired()
+                    .HasColumnName("RECORD_PK")
+                    .HasColumnType("varchar(250)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+
+                entity.Property(e => e.SystemOfRecord)
+                    .IsRequired()
+                    .HasColumnName("SYSTEM_OF_RECORD")
+                    .HasColumnType("varchar(250)")
+                    .HasCharSet("utf8mb4")
+                    .HasCollation("utf8mb4_unicode_ci");
+            });
+
             modelBuilder.Entity<ApprovalsModel>().HasNoKey(); 
             modelBuilder.Entity<PagerCount>().HasNoKey();
             OnModelCreatingPartial(modelBuilder);
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+        public override int SaveChanges()
+        {
+            var changes = from e in ChangeTracker.Entries()
+                          where e.State != EntityState.Unchanged
+                          select e;
+            var addedEntities = new List<EntityEntry>();
+            var changeRecords = new List<SysDataAudit>();
+            int objectsCount;
+
+            // Log each change for audit purposes.
+            foreach (var change in changes)
+            {
+                if (change.State == EntityState.Added)
+                {
+                    // Don't audit this change until after we finish the actual insert. This way any
+                    // auto-generated keys will be created.
+                    addedEntities.Add(change);
+                }
+                else
+                {
+                    changeRecords.AddRange(CreateSysDataAuditForEntity(change));
+                }
+            }
+
+            // Add all audit change records.
+            changeRecords.ForEach(x => SysDataAudit.Add(x));
+
+            // Now save all changes. This will commit any inserts, which we can then audit afterwards.
+            objectsCount = base.SaveChanges();
+
+            // Audit any inserts.
+            changeRecords.Clear();
+            foreach (var insert in addedEntities)
+            {
+                changeRecords.AddRange(CreateSysDataAuditForEntity(insert, true));
+            }
+            if (changeRecords.Count > 0)
+            {
+                changeRecords.ForEach(x => SysDataAudit.Add(x));
+                objectsCount += base.SaveChanges();
+            }
+
+            return objectsCount;
+        }
+
+        private List<SysDataAudit> CreateSysDataAuditForEntity(EntityEntry change, bool insertSpecial = false)
+        {
+            var entityType = change.Entity.GetType();
+            var contextEntityType = Model.FindEntityType(entityType);
+            var tableName = contextEntityType.GetTableName();
+            var columnNames = contextEntityType.GetProperties().Select(p => p.Name);
+            var primaryKeyNames = contextEntityType.FindPrimaryKey().Properties.Select(x => x.Name);
+
+            var username = _httpContextAccessor.HttpContext.User.Identity.Name;
+
+            var changeRecords = new List<SysDataAudit>();
+
+            // Some tables aren't audited.
+            if (_unauditedTables.Contains(tableName)) return changeRecords;
+
+            if (change.State == EntityState.Added || insertSpecial)
+            {
+                var recPkey = "";
+
+                // Primary key is all new values.
+                foreach (var primaryKeyName in primaryKeyNames)
+                {
+                    var value = change.Property(primaryKeyName).CurrentValue;
+                    recPkey += "," + primaryKeyName + "=" + value.ToString();
+                }
+
+                // Insert audit record for each column.
+                foreach (var columnName in columnNames)
+                {
+                    var value = change.Property(columnName).CurrentValue;
+                    var changeRecord = new SysDataAudit()
+                    {
+                        ExternalUserId = username,
+                        SystemOfRecord = "RSNAP",
+                        ChangingTable = tableName,
+                        ChangingColumn = columnName,
+                        RecordPk = recPkey,
+                        NewValue = value?.ToString()
+                    };
+                    changeRecords.Add(changeRecord);
+                }
+            }
+            else if (change.State == EntityState.Modified)
+            {
+                var recPkey = "";
+
+                // Primary key is either new or original values.
+                foreach (var primaryKeyName in primaryKeyNames)
+                {
+                    var value = change.Property(primaryKeyName).CurrentValue;
+                    if (value == null) value = change.Property(primaryKeyName).OriginalValue;
+                    recPkey += "," + primaryKeyName + "=" + value.ToString();
+                }
+
+                // Insert audit record for each modified column.
+                foreach (var columnName in columnNames)
+                {
+                    var property = change.Property(columnName);
+
+                    if (!property.IsModified ||
+                        (property.CurrentValue == null && property.OriginalValue == null) ||
+                        (property.CurrentValue != null && property.OriginalValue != null &&
+                        property.CurrentValue.Equals(property.OriginalValue))) continue;
+
+                    var changeRecord = new SysDataAudit()
+                    {
+                        ExternalUserId = username,
+                        SystemOfRecord = "RSNAP",
+                        ChangingTable = tableName,
+                        ChangingColumn = columnName,
+                        RecordPk = recPkey,
+                        OldValue = property.OriginalValue?.ToString(),
+                        NewValue = property.CurrentValue?.ToString()
+                    };
+                    changeRecords.Add(changeRecord);
+                }
+            }
+            else if (change.State == EntityState.Deleted)
+            {
+                var recPkey = "";
+
+                // Primary key is all original values.
+                foreach (var primaryKeyName in primaryKeyNames)
+                {
+                    var value = change.Property(primaryKeyName).OriginalValue;
+                    recPkey += "," + primaryKeyName + "=" + value.ToString();
+                }
+
+                // Insert audit record for each column.
+                foreach (var columnName in columnNames)
+                {
+                    var value = change.Property(columnName).OriginalValue;
+                    var changeRecord = new SysDataAudit()
+                    {
+                        ExternalUserId = username,
+                        SystemOfRecord = "RSNAP",
+                        ChangingTable = tableName,
+                        ChangingColumn = columnName,
+                        RecordPk = recPkey,
+                        OldValue = value?.ToString()
+                    };
+                    changeRecords.Add(changeRecord);
+                }
+            }
+
+            return changeRecords;
+        }
     }
 }
