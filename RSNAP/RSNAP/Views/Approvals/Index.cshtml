@@ -24,8 +24,7 @@
                     <span class="k-invalid-msg" data-for="ScheduledStartDate"></span><br />
                     @(Html.Kendo().DatePicker()
                                                      .Name("ScheduledStartDate")
-                                                     .ParseFormats(new string[] { "MM/dd/yyyy" })
-                                                     .DateInput(true)
+
                                                      .HtmlAttributes(new { @placeholder = "Scheduled Start Date" })
                     )
                 </div>
@@ -34,8 +33,7 @@
                     <span class="k-invalid-msg" data-for="ScheduledEndDate"></span><br />
                     @(Html.Kendo().DatePicker()
                                                      .Name("ScheduledEndDate")
-                                                     .ParseFormats(new string[] { "MM/dd/yyyy" })
-                                                     .DateInput(true)
+
                                                      .HtmlAttributes(new { @placeholder = "Scheduled End Date" })
                     )
                 </div>
@@ -125,7 +123,7 @@
 
 <div class="grid-containers" id="approvalsContainer">
 
-    <div id="approvalsGridWrapper" class="grid-row hide">
+    <div id="approvalsGridWrapper" class="grid-row">
         <div class="grid-col-12">
             <div class="padding-bottom2 rsnapGrid">
                 @(Html.Kendo().Grid<ApprovalsModel>()
@@ -137,7 +135,7 @@
     columns.Bound(c => c.ProActID).Hidden();
     columns.Bound(c => c.ScheduleDate).Title("Schedule Date");
     columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number");
-    columns.Bound(c => c.OrderNumber).Title("Order Number");
+    columns.Bound(c => c.OrderNumber).Title("Order<br />Number");
     columns.Bound(c => c.PDN).Title("PDN");
     columns.Bound(c => c.Pop).Title("POP");
     columns.Bound(c => c.Amount).Title("Amount");
@@ -149,20 +147,24 @@
     columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
     columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
     columns.Bound(c => c.FONote).Title("FO Notes");
-    columns.Bound(c => c.ContractingOfficer).Title("Administrator Contracting Officer");
-    columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
+    columns.Bound(c => c.ContractingOfficer).Title("Administrator<br />Contracting<br />Officer");
+    columns.Bound(c => c.ACOApprovalStatus).Title("ACO<br />Approval<br/> Status");
     columns.Bound(c => c.CONote).Title("ACO Notes");
-    columns.Bound(c => c.NotificationStatus).Title("Notification Status");
+    columns.Bound(c => c.NotificationStatus).Title("Notification<br />Status");
 })
 .ToolBar(toolbar =>
 {
-    toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\" onclick=\"Approve()\" >Approve</button><button onclick=\"Unapprove()\" class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\" onclick=\"UnderReview()\">Under Review</button><button class=\"k-button k-primary\"  onclick=\"ExportExcel()\" >Save To Excel</button></div>");
+    if (ViewData["Role"].ToString()=="RO")
+    {
+        toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\" onclick=\"SaveComments()\">Save Comments</button></div>");
+    }
+    else
+    {
+        toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\" onclick=\"Approve()\" >Approve</button><button onclick=\"Unapprove()\" class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\" onclick=\"UnderReview()\">Under Review</button><button class=\"k-button k-primary\"  onclick=\"ExportExcel()\" >Save To Excel</button></div>");
+    }
+
 })
 .Events(events => events.DataBound("onGridDataBound").Change("onChange"))
-.Excel(excel => excel
-        .FileName(string.Concat("RSNAP_",DateTime.Now.ToShortDateString(), ".xls"))
-
-    )
 //.Scrollable(sc => sc.Height(540))
 .HtmlAttributes(new { @class = "rsnap-grid" })
 .Resizable(re => re.Columns(true))

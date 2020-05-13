@@ -99,7 +99,7 @@ namespace RSNAP.EFData
                         var password = "";
                         if (success)
                         {
-                            password = _utilityPasswordService.RetrievePassword(databaseName.ToUpper(), currentUsername.ToUpper()).Result;
+                            password = _utilityPasswordService.RetrievePassword(databaseName.ToUpper(), currentUsername.ToUpper()).Result; ;
                             if (string.IsNullOrEmpty(password)) success = false;
                         }
 
@@ -123,7 +123,7 @@ namespace RSNAP.EFData
                 }
             }
         }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -497,7 +497,8 @@ namespace RSNAP.EFData
                     .HasCollation("utf8mb4_unicode_ci");
             });
 
-            modelBuilder.Entity<ApprovalsModel>().HasNoKey(); 
+            modelBuilder.Entity<ApprovalsModel>().HasNoKey();
+            modelBuilder.Entity<ExcelDataModel>().HasNoKey();
             modelBuilder.Entity<PagerCount>().HasNoKey();
             OnModelCreatingPartial(modelBuilder);
         }

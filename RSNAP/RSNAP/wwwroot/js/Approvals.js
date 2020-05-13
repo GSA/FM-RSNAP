@@ -2,9 +2,54 @@
 //var gridName = '';
 var validator;
 var pdfExport = false;
+var isPostBack = true;
+var runtime = 0;
 //var gridTrigger;
+function Search(_rangeControl) {
+    if (!_rangeControl) {
+        ProActIds = null;
+    }
+    runtime++;
+    if (runtime > 1) {
+        isPostBack = false;
+    }
+    $(".status").html('');
+
+    var result = true;
+    //var result = validator.validate();
+
+    if (result) {
+        //var text = $("#ReportTitle").data("kendoDropDownList").text();
+        //var date = $('#ReportDate').val();
+        //$("#reportTitleExportLabel").html(text);
+        //$("#reportDateExportLabel").html(date);
+        //$("#reportRunDateLabel").html(kendo.toString(new Date(), "G"));
+
+        //if (gridName) {
+        displayLoading("#reportContainer", true);
+
+        //// Show the selected grid partial.
+        gridName = '#ApprovalsGrid';
+
+        gridTrigger = 'searchButton';
+
+        var grid = $(gridName).data("kendoGrid");
+
+        grid.dataSource.page(1);
+
+
+
+        var pageSizeDropDownList = grid.wrapper.children(".k-grid-pager").find("select").data("kendoDropDownList");
+        var datasource = pageSizeDropDownList.dataSource;
+        datasource.add({ text: "All", value: 'all' })
+        datasource.sync()
+        //}
+    }
+
+}
 
 $(document).ready(function () {
+    setTimeout("Search();", 500);
 
     //validator = $("#approvalsContainer").kendoValidator({
     //    messages: {
@@ -57,7 +102,7 @@ $(document).ready(function () {
     //}).data("kendoValidator");
 
     $("#Search").click(function () {
-        Search();
+        Search(false);
     });
 
     $("#Clear").click(function () {
@@ -124,15 +169,15 @@ function Clear() {
     $('#OrderNumber').val('');
     $('#IDVContractNumber').val('');
     var kk1 = $("#ScheduledStartDate").data("kendoDatePicker");
-    if (kk1.getDate() != null) {
-        kk1.value(new Date(null)); kk1.trigger('change');
-    }
+
+    kk1.value(null);
+
 
     var kk2 = $("#ScheduledEndDate").data("kendoDatePicker");
-    if (kk2.getDate() != null) {
-        kk2.value(new Date(null)); kk2.trigger('change');
-    }
-    
+
+    kk2.value(null);
+
+
     $("#PDN").val('');
     $("#VendorName").val('');
     var dd1 = $("#FOApprovalStatusAvailable").data("kendoDropDownList");
@@ -140,57 +185,13 @@ function Clear() {
     var dd2 = $("#NotificationStatusAvailable").data("kendoDropDownList");
     dd2.select(0); dd2.trigger('change');
     var dd3 = $("#ACOApprovalStatusAvailable").data("kendoDropDownList");
-    kk1.value(new Date(null)); kk1.trigger('change'); dd3.select(0); dd3.trigger('change');
+    dd3.select(0); dd3.trigger('change');
     //validator.hideMessages();
 
-    $("#approvalsGridWrapper").addClass('hide');
+
 }
 
-function Search() {
 
-    $(".status").html('');
-
-    var result = true;
-    //var result = validator.validate();
-
-    if (result) {
-        //var text = $("#ReportTitle").data("kendoDropDownList").text();
-        //var date = $('#ReportDate').val();
-        //$("#reportTitleExportLabel").html(text);
-        //$("#reportDateExportLabel").html(date);
-        //$("#reportRunDateLabel").html(kendo.toString(new Date(), "G"));
-
-        //if (gridName) {
-        displayLoading("#reportContainer", true);
-
-        //// Show the selected grid partial.
-        gridName = '#ApprovalsGrid';
-        $(gridName).removeClass('hide');
-
-        // Show grid wrapper if needed.
-        $('#approvalsGridWrapper').removeClass('hide');
-
-        
-
-        gridTrigger = 'searchButton';
-
-        var grid = $(gridName).data("kendoGrid");
-
-        grid.dataSource.page(1);
-
-        grid.setOptions({
-            pageable: {
-                Total: window.count
-            }
-        });
-
-        var pageSizeDropDownList = grid.wrapper.children(".k-grid-pager").find("select").data("kendoDropDownList");
-        var datasource = pageSizeDropDownList.dataSource;
-        datasource.add({ text: "All", value: 'all' })
-        datasource.sync()
-        //}
-    }
-}
 
 function isInArray(value, array) {
     return array.indexOf(value) > -1;
@@ -249,8 +250,9 @@ function getGridParams() {
         VendorName: VendorName,
         FOApprovalStatus: fOApprovalStatusAvailable,
         ACOApprovalStatus: aCOApprovalStatusAvailable,
-        NotificationStatus: notificationStatusAvailable
-        //date: date
+        NotificationStatus: notificationStatusAvailable,
+        IsPostBack: isPostBack,
+        IdList: ProActIds
     }
 }
 var dataList = [],
@@ -262,6 +264,8 @@ function onGridDataBound(e) {
     var page = grid.dataSource.page();
     var pageSize = grid.dataSource.pageSize();
     var totalRecords = grid.dataSource.total();
+
+
 
     displayLoading("#approvalsContainer", false);
 
@@ -326,22 +330,25 @@ function onChange(e) {
     var selectedRows = this.select();
     var currentList = [];
     for (var i = 0; i < selectedRows.length; i++) {
-        //currentList.push({ "ProID": selectedRows[i].children[1].innerText, "ProActID": selectedRows[i].children[2].innerText})
-        currentList.push(selectedRows[i].children[2].innerText);
+        currentList.push({ 'id': selectedRows[i].children[2].innerText, 'newComments': selectedRows[i].children[13].children[0].value, 'ProId': selectedRows[i].children[1].innerText });
+
     }
-    console.log(currentList);
+
     selectedDataItems = currentList;
 }
+var ProActIds;
 
 function getSelectedProActIds(selectedItems) {
-    console.log(selectedItems);
-    console.log(disabledItemIds);
+    if (selectedItems == null) {
+        return null;
+    }
     var selectedProActIds = [];
     for (var i = 0; i < selectedItems.length; i++) {
-        if (disabledItemIds.indexOf(selectedItems[i]) == -1) {
+        if (disabledItemIds.indexOf(selectedItems[i].id) == -1) {
             selectedProActIds.push(selectedItems[i]);
         }
     }
+    ProActIds = selectedProActIds;
     return selectedProActIds;
 }
 
@@ -351,9 +358,10 @@ function Approve() {
         GSA_alert("No items selected.");
         return;
     }
-    $.post("/Approvals/ApproveProcess", { ids: proActIds }, function (data) {
+    $.post("/Approvals/ApproveProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
-        Search();
+        Search(true);
+        
     });
 }
 
@@ -361,27 +369,52 @@ function Unapprove() {
     var proActIds = getSelectedProActIds(this.selectedDataItems);
     if (proActIds.length == 0) {
         GSA_alert("No items selected.");
+
         return;
     }
-    $.post("/Approvals/NnapprovedProcess", { ids: proActIds }, function (data) {
+    $.post("/Approvals/NnapprovedProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
-        Search();
+        Search(true);
+        
     });
 }
+
 function UnderReview() {
     var proActIds = getSelectedProActIds(this.selectedDataItems);
     if (proActIds.length == 0) {
         GSA_alert("No items selected.");
         return;
     }
-    $.post("/Approvals/UnderReviewProcess", { ids: proActIds }, function (data) {
+    $.post("/Approvals/UnderReviewProcess", { modes: proActIds }, function (data) {
+        GSA_alert(data);
+        Search(true);
+        
+    });
+}
+
+function ExportExcel() {
+    $.post("/Approvals/ExportExcelData", getGridParams(), function (data) {
+        if (data.Success) {
+            location.href = "/Approvals/GetExcel/" + data.Id;
+        } else {
+            GSA_alert("Please try again later.");
+        }
+
+    });
+}
+
+function SaveComments() {
+    var proActIds = getSelectedProActIds(this.selectedDataItems);
+    if (proActIds.length == 0) {
+        GSA_alert("No items selected.");
+        return;
+    }
+
+    $.post("/Approvals/SaveComments", { modes: proActIds }, function (data) {
         GSA_alert(data);
         Search();
     });
-}
-function ExportExcel() {
-    var grid = $("#ApprovalsGrid").data("kendoGrid");
-    grid.saveAsExcel();
+
 }
 
     //function subtotalTemplate(sum, group, text) {

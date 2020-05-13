@@ -9,7 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace RSNAP.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly IFMUtilityConfigService _configService;
         private readonly ILogger<HomeController> _logger;
@@ -65,7 +65,14 @@ namespace RSNAP.Controllers
         [Authorize]
         public IActionResult LoggedIn()
         {
-            return RedirectToAction("Index", "Approvals");
+            FillSessionInfo();
+            if (string.IsNullOrEmpty(_RoleText))
+            {
+                return Redirect("/");
+            }
+            ViewData["Role"] = _RoleText;
+
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

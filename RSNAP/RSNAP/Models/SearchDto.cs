@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace RSNAP.Models
 {
@@ -17,6 +15,7 @@ namespace RSNAP.Models
         public string FOApprovalStatus { get; set; }
         public string ACOApprovalStatus { get; set; }
         public string NotificationStatus { get; set; }
-        public bool isDefaultList { get; set; }
+        public bool IsPostBack { get; set; }
+        public List<ProcessModel> IdList { get; set; }
     }
 }

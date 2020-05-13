@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using RSNAP.Models;
 
 namespace RSNAP.Controllers
 {
-    public class BaseControllerController : Controller
+    public class BaseController : Controller
     {
         public string _Email { get; set; }
         public string _ROLE { get; set; }
         public string _Name { get; set; }
+        public string _RoleText { get; set; }
 
         public void FillSessionInfo()
         {
@@ -34,9 +33,24 @@ namespace RSNAP.Controllers
                         _ROLE = claim.Value;
                         break;
                     case ClaimTypes.Email:
+
                         _Email = claim.Value;
                         break;
                 }
+            }
+
+            // Disable All fields and Modification buttons, only search fields and button enabled
+            if (_ROLE == RoleEnum.FO.GetDescription())
+            {
+                _RoleText = "FO";
+            }
+            else if (_ROLE == RoleEnum.CO.GetDescription())
+            {
+                _RoleText = "CO";
+            }
+            else if (_ROLE == RoleEnum.RO.GetDescription())
+            {
+                _RoleText = "RO";
             }
         }
     }
