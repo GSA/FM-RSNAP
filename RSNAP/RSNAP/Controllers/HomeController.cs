@@ -25,6 +25,7 @@ namespace RSNAP.Controllers
 
         public IActionResult Index()
         {
+            var redirectToLogin = true;
             var warning = HttpContext.Session.GetString("warning");
             if (string.IsNullOrEmpty(warning))
             {
@@ -39,12 +40,19 @@ namespace RSNAP.Controllers
             if (closeMessage != "OPEN")
             {
                 ViewData["closeMessage"] = closeMessage;
+                redirectToLogin = false;
             }
 
             // Do we have a warning (via CAAM)?
             if (warningMessage != "OPEN")
             {
                 ViewData["warningMessage"] = warningMessage;
+                redirectToLogin = false;
+            }
+
+            if (redirectToLogin && !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("LoginAsync", "Login");
             }
 
             return View();

@@ -30,5 +30,6 @@
   "CookieAuthentication": {
     "ExpireMinutes": "6",
     "SessionExpireNotificationMinutes": "5"
-  }
+  },
+  "LogoutRedirectURL": "https://dev-fmitservices.gsa.gov"
 }
