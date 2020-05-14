@@ -135,7 +135,7 @@
     columns.Bound(c => c.ProActID).Hidden();
     columns.Bound(c => c.ScheduleDate).Title("Schedule Date");
     columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number");
-    columns.Bound(c => c.OrderNumber).Title("Order<br />Number");
+    columns.Bound(c => c.OrderNumber).Title("Order Number");
     columns.Bound(c => c.PDN).Title("PDN");
     columns.Bound(c => c.Pop).Title("POP");
     columns.Bound(c => c.Amount).Title("Amount");
@@ -146,11 +146,11 @@
     columns.Bound(c => c.NewComments).Title("New Comments").ClientTemplate("<textarea></textarea>");
     columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
     columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
-    columns.Bound(c => c.FONote).Title("FO Notes");
-    columns.Bound(c => c.ContractingOfficer).Title("Administrator<br />Contracting<br />Officer");
-    columns.Bound(c => c.ACOApprovalStatus).Title("ACO<br />Approval<br/> Status");
-    columns.Bound(c => c.CONote).Title("ACO Notes");
-    columns.Bound(c => c.NotificationStatus).Title("Notification<br />Status");
+    columns.Bound(c => c.FONote).Title("FO Notes").Width(200);
+    columns.Bound(c => c.ContractingOfficer).Title("Administrator Contracting Officer");
+    columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
+    columns.Bound(c => c.CONote).Title("ACO Notes").Width(210);
+    columns.Bound(c => c.NotificationStatus).Title("Notification Status");
 })
 .ToolBar(toolbar =>
 {

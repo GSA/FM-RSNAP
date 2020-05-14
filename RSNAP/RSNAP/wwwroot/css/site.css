@@ -442,6 +442,11 @@ h3 {
     background-color: white;
 }
 
+.rsnapGrid {
+    overflow-x:scroll;
+}
+
+
 .rsnapGrid .toolBar button {
     margin-left: 10px;
     font-size: .875rem;
@@ -486,12 +491,11 @@ h3 {
     }
 
     #approvalsContainer th.k-header {
-        padding: 0 !important;
+        /*padding: 5 !important;*/
         word-wrap: normal;
-        white-space: pre-wrap;
         word-break: keep-all;
         height: auto !important;
-        white-space: pre-wrap !important;
+        white-space: nowrap !important;
         font-weight: 700;
         color: #495057;
         border: 1px solid #e9ecef;
@@ -499,9 +503,18 @@ h3 {
         background-color: #ffffff;
     }
 
+    #approvalsContainer tr th:nth-child(17),
+    #approvalsContainer tr td:nth-child(17) {
+       min-width:100px;
+    }
+    #approvalsContainer tr th:nth-child(20),
+    #approvalsContainer tr td:nth-child(20) {
+        min-width: 130px;
+    }
+
     #approvalsContainer tr th:first-child,
     #approvalsContainer tr td:first-child {
-        padding: 0 !important;
+        /*padding: 0 !important;*/
         text-align: center;
     }
 
@@ -558,4 +571,14 @@ h3 {
 #approvalsContainer .k-state-selected:not(.select-disabled) td {
     background-color: rgb(108, 117, 125) !important;
     color: #fff !important;
+}
+.noteClass{
+    min-width:20px;
+}
+
+#ApprovalsGrid {
+    display: inline-block !important;
+}
+.k-grid-pager {
+    display:inline-flex;
 }
