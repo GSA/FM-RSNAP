@@ -573,7 +573,7 @@ namespace RSNAP.EFData
                 foreach (var primaryKeyName in primaryKeyNames)
                 {
                     var value = change.Property(primaryKeyName).CurrentValue;
-                    recPkey += "," + primaryKeyName + "=" + value.ToString();
+                    recPkey += (String.IsNullOrEmpty(recPkey) ? "" : ",") + primaryKeyName + "=" + value.ToString();
                 }
 
                 // Insert audit record for each column.
