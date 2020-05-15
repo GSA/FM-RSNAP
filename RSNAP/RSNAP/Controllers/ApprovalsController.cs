@@ -82,7 +82,6 @@ namespace RSNAP.Controllers
             var list = new List<ApprovalsModel>();
 
             FillSessionInfo();
-
             List<PagerCount> pagerCount = _context.Set<PagerCount>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@IdList,@isCount)"
                , new MySqlParameter("@PageIndex", request.Page)
                , new MySqlParameter("@PageSize", request.PageSize)
@@ -138,6 +137,10 @@ namespace RSNAP.Controllers
             try
             {
                 FillSessionInfo();
+
+                AddComments(modes);
+                _context.SaveChanges();
+
                 int needNewSEQ=0;
                 List<string> ids = modes.Select(x => x.Id).ToList();
                 var pendingROActions = _context.PendingroActions.Where(x => ids.Contains(x.ProActId)).ToList();
@@ -156,7 +159,7 @@ namespace RSNAP.Controllers
                     {
                         if (pendingroAction.FundApprovalStatus.ToUpper() == "APPROVED" && pendingroAction.NotificationStatus.ToUpper() == "NOT GENERATED")
                         {
-                            if (pendingroAction.FundApproverNote != "Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts")
+                            if (pendingroAction.ContractingApproverNote != "Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts")
                             {
                                 needNewSEQ++;
                             }
@@ -167,10 +170,10 @@ namespace RSNAP.Controllers
                     }
                 }
 
-                //AddComments(modes);
+                
 
                 int count = _context.SaveChanges();
-                count = count - needNewSEQ;
+                
                 // Because the modification will produce a log record, so the number of lines display here is less than the actual one. So it is divided by two here.
                 // casue by trg_pendingro_actions_update trg_pendingro_actions_insert
                 return Json((count / 2).ToString() + " record(s) approved by " + _ROLE);
@@ -189,6 +192,10 @@ namespace RSNAP.Controllers
             try
             {
                 FillSessionInfo();
+
+                AddComments(modes);
+                _context.SaveChanges();
+
                 List<string> ids = modes.Select(x => x.Id).ToList();
 
 
@@ -238,6 +245,10 @@ namespace RSNAP.Controllers
             try
             {
                 FillSessionInfo();
+
+                AddComments(modes);
+                _context.SaveChanges();
+
                 List<string> ids = modes.Select(x => x.Id).ToList();
 
 
@@ -266,8 +277,6 @@ namespace RSNAP.Controllers
                     }
                 }
 
-                AddComments(modes);
-
                 int count = _context.SaveChanges();
                 // Because the modification will produce a log record, so the number of lines display here is less than the actual one. So it is divided by two here.
                 // casue by trg_pendingro_actions_update trg_pendingro_actions_insert
@@ -288,11 +297,12 @@ namespace RSNAP.Controllers
             {
                 FillSessionInfo();
                 int commentedRows = 0;
-                //if (_RoleText == "RO")
-                //{
-                //commentedRows = AddComments(modes);
-
-                //}
+                if (_RoleText == "RO")
+                {
+                    AddComments(modes);
+                }
+                commentedRows=_context.SaveChanges();
+                commentedRows = commentedRows / 6;
                 return Json(commentedRows.ToString() + " comment(s) added by " + _ROLE);
             }
             catch (System.Exception ex)
@@ -305,21 +315,26 @@ namespace RSNAP.Controllers
 
         }
 
-        private void AddComments(List<ProcessModel> modes)
+        private int AddComments(List<ProcessModel> modes)
         {
             FillSessionInfo();
+            int commentLogCount = 0;
             foreach (var item in modes)
             {
                 if (item.NewComments != null && item.NewComments.Trim() != string.Empty)
                 {
+                    List<SeqModel> seqModels= _context.Set<SeqModel>().FromSqlRaw("call GetCommentLogSeq()").ToList();
                     PendingroCommentLog pendingroCommentLog = new PendingroCommentLog();
+                    pendingroCommentLog.ProCommentId = seqModels.FirstOrDefault().Id;
                     pendingroCommentLog.ProId = item.ProId;
                     pendingroCommentLog.UserId = _Name;
+                    pendingroCommentLog.CommentDate = DateTime.Now;
                     pendingroCommentLog.ProComment = item.NewComments;
                     _context.PendingroCommentLog.Add(pendingroCommentLog);
+                    commentLogCount++;
                 }
             }
-
+            return commentLogCount;
         }
 
         private string IdListStringHelper(List<ProcessModel> IdList)

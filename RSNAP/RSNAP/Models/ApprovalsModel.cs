@@ -30,7 +30,6 @@ namespace RSNAP.Models
         public string ContractingOfficer { get; set; }
         public bool CheckboxStatus { get; set; }
         public string Pop { set; get; }
-        [NotMapped]
         public string Comments { set; get; }
         [NotMapped]
         public string NewComments { set; get; }

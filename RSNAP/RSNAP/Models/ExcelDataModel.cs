@@ -18,5 +18,6 @@
         public string ACOApprovalStatus { get; set; }
         public string CONote { get; set; }
         public string NotificationStatus { get; set; }
+        public string Comments { set; get; }
     }
 }

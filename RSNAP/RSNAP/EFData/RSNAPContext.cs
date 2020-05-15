@@ -500,6 +500,8 @@ namespace RSNAP.EFData
             modelBuilder.Entity<ApprovalsModel>().HasNoKey();
             modelBuilder.Entity<ExcelDataModel>().HasNoKey();
             modelBuilder.Entity<PagerCount>().HasNoKey();
+            modelBuilder.Entity<SeqModel>().HasNoKey();
+
             OnModelCreatingPartial(modelBuilder);
         }
 

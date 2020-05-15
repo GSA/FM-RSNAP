@@ -289,7 +289,6 @@ function onGridDataBound(e) {
 
     gridTrigger = null;
     dataList = e.sender._data;
-    console.log(dataList);
     for (var i = 0; i < dataList.length; i++) {
         if (dataList[i].CheckboxStatus === false) {
             disabledItemIds.push(dataList[i].ProActID);
@@ -353,8 +352,9 @@ function getSelectedProActIds(selectedItems) {
 }
 
 function Approve() {
+    proActIds = null;
     var proActIds = getSelectedProActIds(this.selectedDataItems);
-    if (proActIds.length == 0) {
+    if (proActIds == null||proActIds.length == 0) {
         GSA_alert("No items selected.");
         return;
     }
@@ -363,11 +363,14 @@ function Approve() {
         Search(true);
         
     });
+    this.selectedDataItems = null;
 }
 
 function Unapprove() {
+    proActIds = null;
+    console.log(this.selectedDataItems);
     var proActIds = getSelectedProActIds(this.selectedDataItems);
-    if (proActIds.length == 0) {
+    if (proActIds == null ||proActIds.length == 0) {
         GSA_alert("No items selected.");
 
         return;
@@ -375,20 +378,21 @@ function Unapprove() {
     $.post("/Approvals/NnapprovedProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
         Search(true);
-        
     });
+    this.selectedDataItems = null;
 }
 
 function UnderReview() {
+    proActIds = null;
     var proActIds = getSelectedProActIds(this.selectedDataItems);
-    if (proActIds.length == 0) {
+    if (proActIds == null ||proActIds.length == 0) {
         GSA_alert("No items selected.");
         return;
     }
     $.post("/Approvals/UnderReviewProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
         Search(true);
-        
+        this.selectedDataItems = null;
     });
 }
 
@@ -404,15 +408,24 @@ function ExportExcel() {
 }
 
 function SaveComments() {
-    var proActIds = getSelectedProActIds(this.selectedDataItems);
-    if (proActIds.length == 0) {
-        GSA_alert("No items selected.");
-        return;
+
+    gridName = '#ApprovalsGrid';
+    var grid = $(gridName).data("kendoGrid");
+
+    var dataList = [];
+    
+    for (var i = 0; i < grid.tbody[0].childNodes.length; i++) {
+        var row = grid.tbody[0].childNodes[i];
+        if (row.childNodes[13].childNodes[0].value) {
+            dataList.push({ 'id': row.children[2].innerText, 'newComments': row.children[13].children[0].value, 'ProId': row.children[1].innerText })
+        }
+        
+
     }
 
-    $.post("/Approvals/SaveComments", { modes: proActIds }, function (data) {
+    $.post("/Approvals/SaveComments", { modes: dataList }, function (data) {
         GSA_alert(data);
-        Search();
+        Search(true);
     });
 
 }
