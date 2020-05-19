@@ -358,7 +358,7 @@ function Approve() {
         GSA_alert("No items selected.");
         return;
     }
-    $.post("/Approvals/ApproveProcess", { modes: proActIds }, function (data) {
+    $.post("/rsnap/Approvals/ApproveProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
         Search(true);
         
@@ -375,7 +375,7 @@ function Unapprove() {
 
         return;
     }
-    $.post("/Approvals/NnapprovedProcess", { modes: proActIds }, function (data) {
+    $.post("/rsnap/Approvals/NnapprovedProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
         Search(true);
     });
@@ -389,7 +389,7 @@ function UnderReview() {
         GSA_alert("No items selected.");
         return;
     }
-    $.post("/Approvals/UnderReviewProcess", { modes: proActIds }, function (data) {
+    $.post("/rsnap/Approvals/UnderReviewProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
         Search(true);
         this.selectedDataItems = null;
@@ -397,7 +397,7 @@ function UnderReview() {
 }
 
 function ExportExcel() {
-    $.post("/Approvals/ExportExcelData", getGridParams(), function (data) {
+    $.post("/rsnap/Approvals/ExportExcelData", getGridParams(), function (data) {
         if (data.Success) {
             location.href = "/Approvals/GetExcel/" + data.Id;
         } else {
@@ -423,7 +423,7 @@ function SaveComments() {
 
     }
 
-    $.post("/Approvals/SaveComments", { modes: dataList }, function (data) {
+    $.post("/rsnap/Approvals/SaveComments", { modes: dataList }, function (data) {
         GSA_alert(data);
         Search(true);
     });

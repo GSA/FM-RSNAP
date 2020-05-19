@@ -185,7 +185,7 @@
 .ServerOperation(true)
 .Events(events => events.Error("ajax_error_handler"))
 .Model(model => model.Id(a => a.Id))
-.Read(read => read.Action("Approvals_Read", "Approvals").Data("getGridParams"))
+.Read(read => read.Url(  "/rsnap/Approvals/Approvals_Read").Data("getGridParams"))
 .PageSize(20)
 )
                 )
