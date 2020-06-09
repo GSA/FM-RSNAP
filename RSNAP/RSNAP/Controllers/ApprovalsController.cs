@@ -72,7 +72,8 @@ namespace RSNAP.Controllers
             model.NotificationStatusAvailable.Add(new SelectListItem("CO/Vendor Missed", "CO/Vendor Missed"));
             model.NotificationStatusAvailable.Insert(0, new SelectListItem("Select Status", ""));
 
-            ViewData["Role"] = _RoleText;
+             ViewData["Role"] = _RoleText;
+            ViewData["RoleText"] =string.IsNullOrEmpty(_ROLE) ? "": $" as { _ROLE.ToLower()}";
             return View(model);
         }
 
@@ -80,8 +81,9 @@ namespace RSNAP.Controllers
         public IActionResult Approvals_Read([DataSourceRequest] DataSourceRequest request, SearchDto searchModel)
         {
             var list = new List<ApprovalsModel>();
-
+            
             FillSessionInfo();
+            
             List<PagerCount> pagerCount = _context.Set<PagerCount>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@IdList,@isCount)"
                , new MySqlParameter("@PageIndex", request.Page)
                , new MySqlParameter("@PageSize", request.PageSize)
@@ -96,8 +98,8 @@ namespace RSNAP.Controllers
                , new MySqlParameter("@NotificationStatus", searchModel.NotificationStatus)
                , new MySqlParameter("@isDefaultList", searchModel.IsPostBack)
                , new MySqlParameter("@Role", _RoleText)
-               , new MySqlParameter("@SortBy", (request.Sorts.Count > 0 ? request.Sorts.FirstOrDefault().Member : null))
-               , new MySqlParameter("@SortDirection", (request.Sorts.Count > 0 ? request.Sorts.FirstOrDefault().SortDirection.ToString() : null))
+               , new MySqlParameter("@SortBy", request.Sorts.Count !=0 ? request.Sorts.FirstOrDefault().Member:null )
+               , new MySqlParameter("@SortDirection", request.Sorts.Count != 0 ? request.Sorts.FirstOrDefault().SortDirection.ToString() : null)
                , new MySqlParameter("@IdList", IdListStringHelper(searchModel.IdList))
                , new MySqlParameter("@isCount", true)).ToList();
 
@@ -115,8 +117,8 @@ namespace RSNAP.Controllers
                , new MySqlParameter("@NotificationStatus", searchModel.NotificationStatus)
                , new MySqlParameter("@isDefaultList", searchModel.IsPostBack)
                , new MySqlParameter("@Role", _RoleText)
-               , new MySqlParameter("@SortBy", (request.Sorts.Count > 0 ? request.Sorts.FirstOrDefault().Member : null))
-               , new MySqlParameter("@SortDirection", (request.Sorts.Count > 0 ? request.Sorts.FirstOrDefault().SortDirection.ToString() : null))
+              , new MySqlParameter("@SortBy", request.Sorts.Count != 0 ? request.Sorts.FirstOrDefault().Member : null)
+               , new MySqlParameter("@SortDirection", request.Sorts.Count != 0 ? request.Sorts.FirstOrDefault().SortDirection.ToString() : null)
                , new MySqlParameter("@IdList", IdListStringHelper(searchModel.IdList))
                , new MySqlParameter("@isCount", false)).ToList();
 
@@ -137,10 +139,9 @@ namespace RSNAP.Controllers
             try
             {
                 FillSessionInfo();
-
+                
                 AddComments(modes);
                 _context.SaveChanges();
-
                 int needNewSEQ=0;
                 List<string> ids = modes.Select(x => x.Id).ToList();
                 var pendingROActions = _context.PendingroActions.Where(x => ids.Contains(x.ProActId)).ToList();
@@ -176,7 +177,7 @@ namespace RSNAP.Controllers
                 
                 // Because the modification will produce a log record, so the number of lines display here is less than the actual one. So it is divided by two here.
                 // casue by trg_pendingro_actions_update trg_pendingro_actions_insert
-                return Json((count / 2).ToString() + " record(s) approved by " + _ROLE);
+                return Json(pendingROActions.Count.ToString() + " record(s) approved by " + _ROLE);
             }
             catch (System.Exception ex)
             {
@@ -192,10 +193,8 @@ namespace RSNAP.Controllers
             try
             {
                 FillSessionInfo();
-
                 AddComments(modes);
                 _context.SaveChanges();
-
                 List<string> ids = modes.Select(x => x.Id).ToList();
 
 
@@ -229,7 +228,7 @@ namespace RSNAP.Controllers
                 int count = _context.SaveChanges();
                 // Because the modification will produce a log record, so the number of lines display here is less than the actual one. So it is divided by two here.
                 // casue by trg_pendingro_actions_update trg_pendingro_actions_insert
-                return Json((count / 2).ToString() + " record(s) unapproved by " + _ROLE);
+                return Json(pendingROActions.Count.ToString() + " record(s) unapproved by " + _ROLE);
             }
             catch (System.Exception ex)
             {
@@ -245,10 +244,8 @@ namespace RSNAP.Controllers
             try
             {
                 FillSessionInfo();
-
                 AddComments(modes);
                 _context.SaveChanges();
-
                 List<string> ids = modes.Select(x => x.Id).ToList();
 
 
@@ -280,7 +277,7 @@ namespace RSNAP.Controllers
                 int count = _context.SaveChanges();
                 // Because the modification will produce a log record, so the number of lines display here is less than the actual one. So it is divided by two here.
                 // casue by trg_pendingro_actions_update trg_pendingro_actions_insert
-                return Json((count / 2).ToString() + " record(s) under review by " + _ROLE);
+                return Json(pendingROActions.Count.ToString() + " record(s) under review by " + _ROLE);
             }
             catch (System.Exception ex)
             {
@@ -339,24 +336,39 @@ namespace RSNAP.Controllers
 
         private string IdListStringHelper(List<ProcessModel> IdList)
         {
-
+            string str = null;
             if (IdList == null || IdList.Count == 0)
             {
-                return null;
+                str = null;
             }
             else
             {
-                return string.Join(',', IdList.Select(x => x.Id).ToList());
+                str= string.Join(',', IdList.Select(x => x.Id).ToList());
             }
-
+            return str;
 
         }
         [HttpPost]
         public JsonResult ExportExcelData(SearchDto searchModel)
         {
             FillSessionInfo();
-            List<ExcelDataModel> list = new List<ExcelDataModel>();
-            list = _context.Set<ExcelDataModel>().FromSqlRaw("call Get_ROListForExcel(@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@IdList)"
+
+            string sortStr = null;
+
+            switch (searchModel.Dir)
+            {
+                case "asc":
+                    sortStr= "Ascending";
+                    break;
+
+                case "desc":
+                    sortStr = "Descending";
+                    break;
+            }
+
+            List <ExcelDataModel> list = new List<ExcelDataModel>();
+            
+            list = _context.Set<ExcelDataModel>().FromSqlRaw("call Get_ROListForExcel(@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@IdList)"
 
                , new MySqlParameter("@PopStartDate", searchModel.ScheduledStartDate)
                , new MySqlParameter("@PopEndDate", searchModel.ScheduledEndDate)
@@ -369,7 +381,10 @@ namespace RSNAP.Controllers
                , new MySqlParameter("@NotificationStatus", searchModel.NotificationStatus)
                , new MySqlParameter("@isDefaultList", searchModel.IsPostBack)
                , new MySqlParameter("@Role", _RoleText)
+                , new MySqlParameter("@SortBy", searchModel.Field)
+               , new MySqlParameter("@SortDirection", sortStr)
                , new MySqlParameter("@IdList", IdListStringHelper(searchModel.IdList))).ToList();
+
             DataTable dtSource = DataTableExtend.ToDataTable<ExcelDataModel>(list);
             IWorkbook workbook = new XSSFWorkbook();
             ISheet sheet1 = workbook.CreateSheet("Sheet1");

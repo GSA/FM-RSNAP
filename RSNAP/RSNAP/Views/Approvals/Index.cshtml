@@ -9,6 +9,8 @@
 <script>
     var loadingError = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.loadingError));
 
+    var roleText='@ViewData["Role"]';
+
 </script>
 <div class="grid-containers">
     <div class="grid-row">
@@ -18,6 +20,7 @@
             <div>
                 <h3>Search Criteria</h3>
             </div>
+           
             <div class="grid-row header">
                 <div class="col-md-4 padding-bottom-1">
                     <label>Scheduled Start Date</label>
@@ -110,9 +113,12 @@
             </div>
             <div class="grid-row">
                 <div class="col-md-12 padding-bottom-2">
-                    <h3 class="redWarningCopy text-center">
-                        Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts
-                    </h3>
+                    @if (@ViewData["Role"].ToString() == "FO"|| @ViewData["Role"].ToString() == "CO")
+                    {
+                        <h3 class="redWarningCopy text-center text-secondary-vivid">
+                            Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts
+                        </h3>
+                    }
                 </div>
             </div>
         </div>
@@ -144,9 +150,11 @@
     columns.Bound(c => c.COEmail).Title("CO Email");
     columns.Bound(c => c.Comments).Title("Comments");
     columns.Bound(c => c.NewComments).Title("New Comments").ClientTemplate("<textarea></textarea>");
+   
     columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
     columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
     columns.Bound(c => c.FONote).Title("FO Notes").Width(200);
+    
     columns.Bound(c => c.ContractingOfficer).Title("Administrator Contracting Officer");
     columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
     columns.Bound(c => c.CONote).Title("ACO Notes").Width(210);
@@ -164,14 +172,16 @@
     }
 
 })
-.Events(events => events.DataBound("onGridDataBound").Change("onChange"))
+.Events(events => 
+events.DataBound("onGridDataBound")
+.Change("onChange").Sort("onSorting"))
 //.Scrollable(sc => sc.Height(540))
 .HtmlAttributes(new { @class = "rsnap-grid" })
 .Resizable(re => re.Columns(true))
 .Navigatable(true)
 .Sortable()
 .AutoBind(false)
-.Pageable(pager => pager.PageSizes(new[] { 10, 20, 50, 100 })
+.Pageable(pager => pager.PageSizes(new[] { 5,10, 20, 50, 100 })
 .Refresh(true)
 .ButtonCount(5))
 .DataSource(dataSource => dataSource

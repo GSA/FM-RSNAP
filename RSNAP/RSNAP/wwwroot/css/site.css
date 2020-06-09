@@ -582,3 +582,6 @@ h3 {
 .k-grid-pager {
     display:inline-flex;
 }
+.gray-font {
+    color: #a9aeb1 !important;
+}

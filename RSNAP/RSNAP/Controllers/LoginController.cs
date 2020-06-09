@@ -74,8 +74,8 @@ namespace RSNAP.Controllers
             {
                 await _auditService.WriteUserEvent("RSNAP", User.Identity.Name, UserEvent.Logoff);
             }
-
-            return Redirect(Startup.Configuration.GetValue<string>("LogoutRedirectURL"));
+            return RedirectToAction("Index", "Home");
+            //return Redirect(Startup.Configuration.GetValue<string>("LogoutRedirectURL"));
         }
 
         [Route("Login/SessionTimeoutAsync")]

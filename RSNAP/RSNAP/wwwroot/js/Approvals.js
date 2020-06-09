@@ -41,15 +41,51 @@ function Search(_rangeControl) {
 
         var pageSizeDropDownList = grid.wrapper.children(".k-grid-pager").find("select").data("kendoDropDownList");
         var datasource = pageSizeDropDownList.dataSource;
-        datasource.add({ text: "All", value: 'all' })
+        if (isPostBack) {
+             datasource.add({ text: "All", value: 'all' })
+        }
+       
         datasource.sync()
         //}
     }
 
 }
 
+function inItRODropDown() {
+    var dd1 = $("#FOApprovalStatusAvailable").data("kendoDropDownList");
+    dd1.select(3);
+    var dd2 = $("#NotificationStatusAvailable").data("kendoDropDownList");
+    dd2.select(1);
+    var dd3 = $("#ACOApprovalStatusAvailable").data("kendoDropDownList");
+    dd3.select(3); 
+}
+function inItCODropDown() {
+    var dd1 = $("#FOApprovalStatusAvailable").data("kendoDropDownList");
+    dd1.select(3);
+    var dd2 = $("#NotificationStatusAvailable").data("kendoDropDownList");
+    dd2.select(1);
+}
+function inItFODropDown() {
+    var dd1 = $("#FOApprovalStatusAvailable").data("kendoDropDownList");
+    dd1.select(2);
+    var dd2 = $("#NotificationStatusAvailable").data("kendoDropDownList");
+    dd2.select(1);
+}
+
 $(document).ready(function () {
     setTimeout("Search();", 500);
+
+    //if (roleText=="RO") {
+    //    setTimeout("inItRODropDown();", 500);
+    //}
+
+    //if (roleText == "CO") {
+    //    setTimeout("inItCODropDown();", 500);
+    //}
+
+    //if (roleText == "FO") {
+    //    setTimeout("inItFODropDown();", 500);
+    //}
 
     //validator = $("#approvalsContainer").kendoValidator({
     //    messages: {
@@ -144,6 +180,11 @@ function displayLoading(target, display) {
     var element = $(target);
     kendo.ui.progress(element, display);
 }
+var sortModel = { field: null, dir: null };
+function onSorting(arg) {
+    sortModel.field = arg.sort.field;
+    sortModel.dir = arg.sort.dir;
+}
 
 //function onReportTitleSelect(e) {
 //    var newGridName = '';
@@ -171,7 +212,6 @@ function Clear() {
     var kk1 = $("#ScheduledStartDate").data("kendoDatePicker");
 
     kk1.value(null);
-
 
     var kk2 = $("#ScheduledEndDate").data("kendoDatePicker");
 
@@ -252,7 +292,9 @@ function getGridParams() {
         ACOApprovalStatus: aCOApprovalStatusAvailable,
         NotificationStatus: notificationStatusAvailable,
         IsPostBack: isPostBack,
-        IdList: ProActIds
+        IdList: ProActIds,
+        Field: sortModel.field,
+        Dir: sortModel.dir
     }
 }
 var dataList = [],
@@ -298,6 +340,35 @@ function onGridDataBound(e) {
         }
 
     }
+    
+    if (roleText == "FO" || roleText == "CO") {
+
+        var _thead = e.sender.thead[0].rows[0];
+
+        $(_thead.childNodes[14].children[0]).css({ "color": "#a9aeb1" });
+        $(_thead.childNodes[15].children[0]).css({ "color": "#a9aeb1" });
+        $(_thead.childNodes[16].children[0]).css({ "color": "#a9aeb1" });
+
+       
+        for (var j = 0; j < dataList.length; j++) {
+            var _FOrow = e.sender.tbody[0].rows[j];
+            console.log(_FOrow.childNodes[14]);
+            $(_FOrow.childNodes[14]).css({ "cssText":"color:#a9aeb1!important;" });
+            $(_FOrow.childNodes[15]).css({ "cssText": "color:#a9aeb1!important;" });
+            $(_FOrow.childNodes[16]).css({ "cssText": "color:#a9aeb1!important;" });
+        }
+    }
+
+    for (var i = 0; i < dataList.length; i++) {
+        if (dataList[i].CheckboxStatus === false) {
+            disabledItemIds.push(dataList[i].ProActID);
+            var _row = e.sender.tbody[0].rows[i];
+            e.sender.tbody[0].rows[i].childNodes[0].children[0].disabled = true;
+            $(_row).addClass('select-disabled');
+        }
+
+    }
+
 
     // Configure the grid to have 508-compliant pagination controls. We strip the '#' off the grid name.
     ConfigureKendoGridPaginationControlsFor508(gridName.substring(1, gridName.length));
@@ -358,8 +429,10 @@ function Approve() {
         GSA_alert("No items selected.");
         return;
     }
+    
     $.post("/rsnap/Approvals/ApproveProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
+        Clear();
         Search(true);
         
     });
@@ -375,8 +448,10 @@ function Unapprove() {
 
         return;
     }
+   
     $.post("/rsnap/Approvals/NnapprovedProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
+        Clear();
         Search(true);
     });
     this.selectedDataItems = null;
@@ -389,8 +464,10 @@ function UnderReview() {
         GSA_alert("No items selected.");
         return;
     }
+    
     $.post("/rsnap/Approvals/UnderReviewProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
+        Clear();
         Search(true);
         this.selectedDataItems = null;
     });

@@ -17,5 +17,8 @@ namespace RSNAP.Models
         public string NotificationStatus { get; set; }
         public bool IsPostBack { get; set; }
         public List<ProcessModel> IdList { get; set; }
+        public string Dir { get; set; }
+        public string Field { get; set; }
+
     }
 }
