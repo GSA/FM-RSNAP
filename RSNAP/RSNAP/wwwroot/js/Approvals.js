@@ -476,7 +476,7 @@ function UnderReview() {
 function ExportExcel() {
     $.post("/rsnap/Approvals/ExportExcelData", getGridParams(), function (data) {
         if (data.Success) {
-            location.href = "/Approvals/GetExcel/" + data.Id;
+            location.href = "/rsnap/Approvals/GetExcel/" + data.Id;
         } else {
             GSA_alert("Please try again later.");
         }

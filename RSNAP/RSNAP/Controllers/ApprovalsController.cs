@@ -72,6 +72,7 @@ namespace RSNAP.Controllers
             model.NotificationStatusAvailable.Add(new SelectListItem("CO/Vendor Missed", "CO/Vendor Missed"));
             model.NotificationStatusAvailable.Insert(0, new SelectListItem("Select Status", ""));
 
+            
              ViewData["Role"] = _RoleText;
             ViewData["RoleText"] =string.IsNullOrEmpty(_ROLE) ? "": $" as { _ROLE.ToLower()}";
             return View(model);
@@ -352,7 +353,7 @@ namespace RSNAP.Controllers
         public JsonResult ExportExcelData(SearchDto searchModel)
         {
             FillSessionInfo();
-
+            
             string sortStr = null;
 
             switch (searchModel.Dir)

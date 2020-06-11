@@ -113,12 +113,22 @@
             </div>
             <div class="grid-row">
                 <div class="col-md-12 padding-bottom-2">
-                    @if (@ViewData["Role"].ToString() == "FO"|| @ViewData["Role"].ToString() == "CO")
+                    @if (@ViewData["Role"].ToString() == "CO")
                     {
                         <h3 class="redWarningCopy text-center text-secondary-vivid">
                             Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts
                         </h3>
                     }
+
+                    @if (@ViewData["Role"].ToString() == "FO")
+                    {
+                        <h3 class="redWarningCopy text-center text-secondary-vivid">
+                            Approval by the Funding Officer certifies that funds have been certified as available and correct for the corresponding contracts
+                        </h3>
+                    }
+
+
+
                 </div>
             </div>
         </div>
@@ -139,7 +149,7 @@
     columns.Select().Width(50);
     columns.Bound(c => c.ProID).Hidden();
     columns.Bound(c => c.ProActID).Hidden();
-    columns.Bound(c => c.ScheduleDate).Title("Schedule Date");
+    columns.Bound(c => c.ScheduleDate).Title("Scheduled Date");
     columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number");
     columns.Bound(c => c.OrderNumber).Title("Order Number");
     columns.Bound(c => c.PDN).Title("PDN");
@@ -155,7 +165,7 @@
     columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
     columns.Bound(c => c.FONote).Title("FO Notes").Width(200);
     
-    columns.Bound(c => c.ContractingOfficer).Title("Administrator Contracting Officer");
+    columns.Bound(c => c.ContractingOfficer).Title("Administrative Contracting Officer");
     columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
     columns.Bound(c => c.CONote).Title("ACO Notes").Width(210);
     columns.Bound(c => c.NotificationStatus).Title("Notification Status");

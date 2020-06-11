@@ -439,7 +439,7 @@ h3 {
 
 .toolBar {
     display: flex !important;
-    background-color: white;
+    background-color: #E1E0DB;
 }
 
 .rsnapGrid {
@@ -472,7 +472,7 @@ h3 {
 }
 
     #approvalsContainer .k-grid-toolbar {
-        background-color: white !important;
+        background-color: #E1E0DB !important;
     }
 
     #approvalsContainer table {
@@ -500,13 +500,18 @@ h3 {
         color: #495057;
         border: 1px solid #e9ecef;
         border-bottom-width: 5px;
-        background-color: #ffffff;
+        background-color: #E1E0DB;
     }
 
-    #approvalsContainer tr th:nth-child(17),
-    #approvalsContainer tr td:nth-child(17) {
-       min-width:100px;
-    }
+     #approvalsContainer th.k-header a {
+          background-color: #E1E0DB;
+     }
+
+
+        #approvalsContainer tr th:nth-child(17),
+        #approvalsContainer tr td:nth-child(17) {
+            min-width: 100px;
+        }
     #approvalsContainer tr th:nth-child(20),
     #approvalsContainer tr td:nth-child(20) {
         min-width: 130px;
@@ -585,3 +590,8 @@ h3 {
 .gray-font {
     color: #a9aeb1 !important;
 }
+
+.k-pager-wrap.k-pager-md .k-pager-info, .k-pager-wrap.k-pager-sm .k-pager-info {
+     display: flex !important; 
+}
+
