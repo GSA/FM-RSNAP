@@ -13,6 +13,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using GSA.FM.Utility.Core.Interfaces;
+using RSNAP.Models;
 
 namespace RSNAP.Controllers
 {
@@ -74,8 +75,9 @@ namespace RSNAP.Controllers
             {
                 await _auditService.WriteUserEvent("RSNAP", User.Identity.Name, UserEvent.Logoff);
             }
-            return RedirectToAction("Index", "Home");
-            //return Redirect(Startup.Configuration.GetValue<string>("LogoutRedirectURL"));
+            // return RedirectToAction("Index", "Home");
+             
+            return Redirect(AppConfigurtaionServices.Configuration["LogoutRedirectURL"]);
         }
 
         [Route("Login/SessionTimeoutAsync")]
