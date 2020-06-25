@@ -57,7 +57,7 @@ namespace RSNAP.Controllers
                 else
                 {
                     // Redirect to SecureAuth based on parameters in the config file.
-                    var samlEndpoint = Startup.Configuration.GetValue<string>("SecureAuth:RedirectURL");
+                    var samlEndpoint = _configuration["SecureAuth:RedirectURL"];
                     return Redirect(samlEndpoint);
                 }
             }
@@ -77,7 +77,7 @@ namespace RSNAP.Controllers
             }
             // return RedirectToAction("Index", "Home");
              
-            return Redirect(AppConfigurtaionServices.Configuration["LogoutRedirectURL"]);
+            return Redirect(_configuration["LogoutRedirectURL"]);
         }
 
         [Route("Login/SessionTimeoutAsync")]
@@ -97,7 +97,7 @@ namespace RSNAP.Controllers
             // This is the SecureAuth callback, which is reached by a 302. The token that
             // SecureAuth sends is a cookie.
             var viewDataErrorKey = "secureAuthError";
-            var tokenName = Startup.Configuration.GetValue<string>("SecureAuth:TokenName");
+            var tokenName = _configuration["SecureAuth:TokenName"];
             string token = Request.Cookies[tokenName];
 
             if (token != null)
