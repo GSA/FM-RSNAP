@@ -9,6 +9,8 @@
 <script>
     var loadingError = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.loadingError));
 
+    var roleText='@ViewData["Role"]';
+
 </script>
 <div class="grid-containers">
     <div class="grid-row">
@@ -18,14 +20,14 @@
             <div>
                 <h3>Search Criteria</h3>
             </div>
+           
             <div class="grid-row header">
                 <div class="col-md-4 padding-bottom-1">
                     <label>Scheduled Start Date</label>
                     <span class="k-invalid-msg" data-for="ScheduledStartDate"></span><br />
                     @(Html.Kendo().DatePicker()
                                                      .Name("ScheduledStartDate")
-                                                     .ParseFormats(new string[] { "MM/dd/yyyy" })
-                                                     .DateInput(true)
+
                                                      .HtmlAttributes(new { @placeholder = "Scheduled Start Date" })
                     )
                 </div>
@@ -34,8 +36,7 @@
                     <span class="k-invalid-msg" data-for="ScheduledEndDate"></span><br />
                     @(Html.Kendo().DatePicker()
                                                      .Name("ScheduledEndDate")
-                                                     .ParseFormats(new string[] { "MM/dd/yyyy" })
-                                                     .DateInput(true)
+
                                                      .HtmlAttributes(new { @placeholder = "Scheduled End Date" })
                     )
                 </div>
@@ -102,19 +103,32 @@
                     )
                 </div>
             </div>
-            <div class="grid-row">
-                <div class="col-md-12 padding-bottom-2">
+            <div class="grid-row margin-top-2">
+                <div class="col-md-12 padding-bottom-2  display-flex flex-justify-center">
                     <div class="padding-bottom-1">
-                        <button type="submit" id="Search" class="btn" accesskey="s"><u>S</u>earch</button>
-                        <button type="submit" id="Clear" class="btn" accesskey="c"><u>C</u>lear</button>
+                        <button type="submit" id="Search" class="usa-button " accesskey="s" style="margin-right:15px !important"><u>S</u>earch</button>
+                        <button type="submit" id="Clear" class="usa-button usa-button--accent-cool usa-button--hover margin-left-1" style="margin-left:15px !important" accesskey="c"><u>C</u>lear</button>
                     </div>
                 </div>
             </div>
             <div class="grid-row">
                 <div class="col-md-12 padding-bottom-2">
-                    <h3 class="redWarningCopy text-center">
-                        Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts
-                    </h3>
+                    @if (@ViewData["Role"].ToString() == "CO")
+                    {
+                        <h3 class="redWarningCopy text-center text-secondary-vivid">
+                            Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts
+                        </h3>
+                    }
+
+                    @if (@ViewData["Role"].ToString() == "FO")
+                    {
+                        <h3 class="redWarningCopy text-center text-secondary-vivid">
+                            Approval by the Funding Officer certifies that funds have been certified as available and correct for the corresponding contracts
+                        </h3>
+                    }
+
+
+
                 </div>
             </div>
         </div>
@@ -125,7 +139,7 @@
 
 <div class="grid-containers" id="approvalsContainer">
 
-    <div id="approvalsGridWrapper" class="grid-row hide">
+    <div id="approvalsGridWrapper" class="grid-row">
         <div class="grid-col-12">
             <div class="padding-bottom2 rsnapGrid">
                 @(Html.Kendo().Grid<ApprovalsModel>()
@@ -135,7 +149,7 @@
     columns.Select().Width(50);
     columns.Bound(c => c.ProID).Hidden();
     columns.Bound(c => c.ProActID).Hidden();
-    columns.Bound(c => c.ScheduleDate).Title("Schedule Date");
+    columns.Bound(c => c.ScheduleDate).Title("Scheduled Date");
     columns.Bound(c => c.IDVContractNumber).Title("IDV/Contract Number");
     columns.Bound(c => c.OrderNumber).Title("Order Number");
     columns.Bound(c => c.PDN).Title("PDN");
@@ -146,30 +160,38 @@
     columns.Bound(c => c.COEmail).Title("CO Email");
     columns.Bound(c => c.Comments).Title("Comments");
     columns.Bound(c => c.NewComments).Title("New Comments").ClientTemplate("<textarea></textarea>");
+   
     columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
     columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
-    columns.Bound(c => c.FONote).Title("FO Notes");
-    columns.Bound(c => c.ContractingOfficer).Title("Administrator Contracting Officer");
+    columns.Bound(c => c.FONote).Title("FO Notes").Width(200);
+    
+    columns.Bound(c => c.ContractingOfficer).Title("Administrative Contracting Officer");
     columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
-    columns.Bound(c => c.CONote).Title("ACO Notes");
+    columns.Bound(c => c.CONote).Title("ACO Notes").Width(210);
     columns.Bound(c => c.NotificationStatus).Title("Notification Status");
 })
 .ToolBar(toolbar =>
 {
-    toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\" onclick=\"Approve()\" >Approve</button><button onclick=\"Unapprove()\" class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\" onclick=\"UnderReview()\">Under Review</button><button class=\"k-button k-primary\"  onclick=\"ExportExcel()\" >Save To Excel</button></div>");
-})
-.Events(events => events.DataBound("onGridDataBound").Change("onChange"))
-.Excel(excel => excel
-        .FileName(string.Concat("RSNAP_",DateTime.Now.ToShortDateString(), ".xls"))
+    if (ViewData["Role"].ToString()=="RO")
+    {
+        toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\" onclick=\"SaveComments()\">Save Comments</button></div>");
+    }
+    else
+    {
+        toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\" onclick=\"Approve()\" >Approve</button><button onclick=\"Unapprove()\" class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\" onclick=\"UnderReview()\">Under Review</button><button class=\"k-button k-primary\"  onclick=\"ExportExcel()\" >Save To Excel</button></div>");
+    }
 
-    )
+})
+.Events(events => 
+events.DataBound("onGridDataBound")
+.Change("onChange").Sort("onSorting"))
 //.Scrollable(sc => sc.Height(540))
 .HtmlAttributes(new { @class = "rsnap-grid" })
 .Resizable(re => re.Columns(true))
 .Navigatable(true)
 .Sortable()
 .AutoBind(false)
-.Pageable(pager => pager.PageSizes(new[] { 10, 20, 50, 100 })
+.Pageable(pager => pager.PageSizes(new[] { 5,10, 20, 50, 100 })
 .Refresh(true)
 .ButtonCount(5))
 .DataSource(dataSource => dataSource
@@ -183,7 +205,7 @@
 .ServerOperation(true)
 .Events(events => events.Error("ajax_error_handler"))
 .Model(model => model.Id(a => a.Id))
-.Read(read => read.Action("Approvals_Read", "Approvals").Data("getGridParams"))
+.Read(read => read.Url(  "/rsnap/Approvals/Approvals_Read").Data("getGridParams"))
 .PageSize(20)
 )
                 )

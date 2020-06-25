@@ -12,8 +12,8 @@ body {
     padding-bottom: 20px;
     font-family: "Source Sans Pro Web", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
     font-weight: 400;
-    font-size: 16px;
     line-height: 18px;
+    color: #212445;
 }
 
 .app-header {
@@ -61,14 +61,14 @@ h5 {
 .btn {
     font-family: "Source Sans Pro Web", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
     font-weight: 700;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 19px;
 }
 
 label {
     font-family: "Source Sans Pro Web", "Helvetica Neue", "Helvetica", "Roboto", "Arial", sans-serif;
     font-weight: 400;
-    font-size: 18px;
+    font-size: 14px;
     line-height: 23px;
     margin-top: 5px;
 }
@@ -205,8 +205,9 @@ span.k-dropdown, .k-dropdown .k-state-hover, .k-dropdown .k-state-default, .k-dr
     background-color: #f5f5f5 !important;
 }*/
 .k-datetimepicker {
-    border: solid 1px rgb(169,169,169); 
+    border: solid 1px rgb(169,169,169);
 }
+
     .k-datetimepicker .k-select {
         border-left: solid 1px rgb(169,169,169);
     }
@@ -438,8 +439,13 @@ h3 {
 
 .toolBar {
     display: flex !important;
-    background-color: white;
+    background-color: #E1E0DB;
 }
+
+.rsnapGrid {
+    overflow-x:scroll;
+}
+
 
 .rsnapGrid .toolBar button {
     margin-left: 10px;
@@ -466,7 +472,7 @@ h3 {
 }
 
     #approvalsContainer .k-grid-toolbar {
-        background-color: white !important;
+        background-color: #E1E0DB !important;
     }
 
     #approvalsContainer table {
@@ -485,22 +491,35 @@ h3 {
     }
 
     #approvalsContainer th.k-header {
-        padding: 0 !important;
+        /*padding: 5 !important;*/
         word-wrap: normal;
-        white-space: pre-wrap;
-        word-break: break-word;
+        word-break: keep-all;
         height: auto !important;
-        white-space: pre-wrap !important;
+        white-space: nowrap !important;
         font-weight: 700;
         color: #495057;
         border: 1px solid #e9ecef;
         border-bottom-width: 5px;
-        background-color: #ffffff;
+        background-color: #E1E0DB;
+    }
+
+     #approvalsContainer th.k-header a {
+          background-color: #E1E0DB;
+     }
+
+
+        #approvalsContainer tr th:nth-child(17),
+        #approvalsContainer tr td:nth-child(17) {
+            min-width: 100px;
+        }
+    #approvalsContainer tr th:nth-child(20),
+    #approvalsContainer tr td:nth-child(20) {
+        min-width: 130px;
     }
 
     #approvalsContainer tr th:first-child,
     #approvalsContainer tr td:first-child {
-        padding: 0 !important;
+        /*padding: 0 !important;*/
         text-align: center;
     }
 
@@ -558,3 +577,21 @@ h3 {
     background-color: rgb(108, 117, 125) !important;
     color: #fff !important;
 }
+.noteClass{
+    min-width:20px;
+}
+
+#ApprovalsGrid {
+    display: inline-block !important;
+}
+.k-grid-pager {
+    display:inline-flex;
+}
+.gray-font {
+    color: #a9aeb1 !important;
+}
+
+.k-pager-wrap.k-pager-md .k-pager-info, .k-pager-wrap.k-pager-sm .k-pager-info {
+     display: flex !important; 
+}
+

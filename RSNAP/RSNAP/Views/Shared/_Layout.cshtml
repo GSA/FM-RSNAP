@@ -104,7 +104,7 @@
                             @if (Context.User.Identity.IsAuthenticated)
                             {
                                 <a class="usa-nav__link" asp-controller="Login" asp-action="LogoutAsync">
-                                    <span>Log Out (@Context.User.Identity.Name)</span>
+                                    <span>Log Out (@Context.User.Identity.Name@ViewData["RoleText"])</span>
                                 </a>
                             }
                             else

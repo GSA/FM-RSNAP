@@ -9,7 +9,7 @@ using Microsoft.Extensions.Localization;
 
 namespace RSNAP.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly IFMUtilityConfigService _configService;
         private readonly ILogger<HomeController> _logger;
@@ -25,6 +25,7 @@ namespace RSNAP.Controllers
 
         public IActionResult Index()
         {
+            var redirectToLogin = true;
             var warning = HttpContext.Session.GetString("warning");
             if (string.IsNullOrEmpty(warning))
             {
@@ -39,12 +40,19 @@ namespace RSNAP.Controllers
             if (closeMessage != "OPEN")
             {
                 ViewData["closeMessage"] = closeMessage;
+                redirectToLogin = false;
             }
 
             // Do we have a warning (via CAAM)?
             if (warningMessage != "OPEN")
             {
                 ViewData["warningMessage"] = warningMessage;
+                redirectToLogin = false;
+            }
+
+            if (redirectToLogin && !User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("LoginAsync", "Login");
             }
 
             return View();
@@ -65,7 +73,14 @@ namespace RSNAP.Controllers
         [Authorize]
         public IActionResult LoggedIn()
         {
-            return RedirectToAction("Index", "Approvals");
+            FillSessionInfo();
+            if (string.IsNullOrEmpty(_RoleText))
+            {
+                return Redirect("/");
+            }
+            ViewData["Role"] = _RoleText;
+
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

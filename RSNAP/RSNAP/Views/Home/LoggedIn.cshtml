@@ -3,14 +3,10 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">You're Logged In!</h1>
-    @if (Context.User.IsInRole("COREADMIN"))
-    { 
-        <p>You have the ADMIN role.</p>
-    }
-    else
-    {
-        <p>You have the USER role.</p>
-    }
+    <h1 class="display-4">Recurring Services Notification Approval Process(RSNAP)</h1>
+    <h1 class="display-5">Welcome to RSNAP</h1>
 </div>
+<script>
+    setTimeout("location.href='@Url.Action("Index","Approvals")';", 3000);
+</script>
 
