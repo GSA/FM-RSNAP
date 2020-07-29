@@ -71,10 +71,9 @@ namespace RSNAP.Controllers
             model.NotificationStatusAvailable.Add(new SelectListItem("CO Missed", "CO Missed"));
             model.NotificationStatusAvailable.Add(new SelectListItem("CO/Vendor Missed", "CO/Vendor Missed"));
             model.NotificationStatusAvailable.Insert(0, new SelectListItem("Select Status", ""));
-
-            
-             ViewData["Role"] = _RoleText;
-            ViewData["RoleText"] =string.IsNullOrEmpty(_ROLE) ? "": $" as { _ROLE.ToLower()}";
+           
+            ViewData["Role"] = _RoleText;
+            ViewData["RoleText"] = string.IsNullOrEmpty(_ROLE) ? "" : $" as { _ROLE.ToLower()}";
             return View(model);
         }
 
@@ -82,9 +81,9 @@ namespace RSNAP.Controllers
         public IActionResult Approvals_Read([DataSourceRequest] DataSourceRequest request, SearchDto searchModel)
         {
             var list = new List<ApprovalsModel>();
-            
+
             FillSessionInfo();
-            
+
             List<PagerCount> pagerCount = _context.Set<PagerCount>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@IdList,@isCount)"
                , new MySqlParameter("@PageIndex", request.Page)
                , new MySqlParameter("@PageSize", request.PageSize)
@@ -99,10 +98,15 @@ namespace RSNAP.Controllers
                , new MySqlParameter("@NotificationStatus", searchModel.NotificationStatus)
                , new MySqlParameter("@isDefaultList", searchModel.IsPostBack)
                , new MySqlParameter("@Role", _RoleText)
-               , new MySqlParameter("@SortBy", request.Sorts.Count !=0 ? request.Sorts.FirstOrDefault().Member:null )
+               , new MySqlParameter("@SortBy", request.Sorts.Count != 0 ? request.Sorts.FirstOrDefault().Member : null)
                , new MySqlParameter("@SortDirection", request.Sorts.Count != 0 ? request.Sorts.FirstOrDefault().SortDirection.ToString() : null)
                , new MySqlParameter("@IdList", IdListStringHelper(searchModel.IdList))
                , new MySqlParameter("@isCount", true)).ToList();
+
+            if (request.PageSize == -1)
+            {
+                request.PageSize = pagerCount.FirstOrDefault().CountNum;
+            }
 
             list = _context.Set<ApprovalsModel>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@IdList,@isCount)"
                , new MySqlParameter("@PageIndex", request.Page)
@@ -140,17 +144,17 @@ namespace RSNAP.Controllers
             try
             {
                 FillSessionInfo();
-                
+
                 AddComments(modes);
                 _context.SaveChanges();
-                int needNewSEQ=0;
+                int needNewSEQ = 0;
                 List<string> ids = modes.Select(x => x.Id).ToList();
                 var pendingROActions = _context.PendingroActions.Where(x => ids.Contains(x.ProActId)).ToList();
                 foreach (var pendingroAction in pendingROActions)
                 {
                     if (_RoleText == "FO" && pendingroAction.NotificationStatus.ToUpper() == "NOT GENERATED")
                     {
-                        if (pendingroAction.FundApproverNote!= "Approval by the Funding Officer certifies that funds have been certified as available and correct for the corresponding contracts")
+                        if (pendingroAction.FundApproverNote != "Approval by the Funding Officer certifies that funds have been certified as available and correct for the corresponding contracts")
                         {
                             needNewSEQ++;
                         }
@@ -172,10 +176,10 @@ namespace RSNAP.Controllers
                     }
                 }
 
-                
+
 
                 int count = _context.SaveChanges();
-                
+
                 // Because the modification will produce a log record, so the number of lines display here is less than the actual one. So it is divided by two here.
                 // casue by trg_pendingro_actions_update trg_pendingro_actions_insert
                 return Json(pendingROActions.Count.ToString() + " record(s) approved by " + _ROLE);
@@ -299,7 +303,7 @@ namespace RSNAP.Controllers
                 {
                     AddComments(modes);
                 }
-                commentedRows=_context.SaveChanges();
+                commentedRows = _context.SaveChanges();
                 commentedRows = commentedRows / 6;
                 return Json(commentedRows.ToString() + " comment(s) added by " + _ROLE);
             }
@@ -321,7 +325,7 @@ namespace RSNAP.Controllers
             {
                 if (item.NewComments != null && item.NewComments.Trim() != string.Empty)
                 {
-                    List<SeqModel> seqModels= _context.Set<SeqModel>().FromSqlRaw("call GetCommentLogSeq()").ToList();
+                    List<SeqModel> seqModels = _context.Set<SeqModel>().FromSqlRaw("call GetCommentLogSeq()").ToList();
                     PendingroCommentLog pendingroCommentLog = new PendingroCommentLog();
                     pendingroCommentLog.ProCommentId = seqModels.FirstOrDefault().Id;
                     pendingroCommentLog.ProId = item.ProId;
@@ -344,7 +348,7 @@ namespace RSNAP.Controllers
             }
             else
             {
-                str= string.Join(',', IdList.Select(x => x.Id).ToList());
+                str = string.Join(',', IdList.Select(x => x.Id).ToList());
             }
             return str;
 
@@ -353,13 +357,13 @@ namespace RSNAP.Controllers
         public JsonResult ExportExcelData(SearchDto searchModel)
         {
             FillSessionInfo();
-            
+
             string sortStr = null;
 
             switch (searchModel.Dir)
             {
                 case "asc":
-                    sortStr= "Ascending";
+                    sortStr = "Ascending";
                     break;
 
                 case "desc":
@@ -367,8 +371,8 @@ namespace RSNAP.Controllers
                     break;
             }
 
-            List <ExcelDataModel> list = new List<ExcelDataModel>();
-            
+            List<ExcelDataModel> list = new List<ExcelDataModel>();
+
             list = _context.Set<ExcelDataModel>().FromSqlRaw("call Get_ROListForExcel(@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@IdList)"
 
                , new MySqlParameter("@PopStartDate", searchModel.ScheduledStartDate)

@@ -4,8 +4,9 @@ var validator;
 var pdfExport = false;
 var isPostBack = true;
 var runtime = 0;
+var pagIndex = 1;
 //var gridTrigger;
-function Search(_rangeControl) {
+function Search(_rangeControl,_size) {
     if (!_rangeControl) {
         ProActIds = null;
     }
@@ -35,16 +36,20 @@ function Search(_rangeControl) {
 
         var grid = $(gridName).data("kendoGrid");
 
-        grid.dataSource.page(1);
+        //grid.dataSource.page(1);
 
 
 
         var pageSizeDropDownList = grid.wrapper.children(".k-grid-pager").find("select").data("kendoDropDownList");
         var datasource = pageSizeDropDownList.dataSource;
+        if (_size==-1) {
+            grid.dataSource.page(1);
+        }
+        grid.dataSource.pageSize(_size);
         if (isPostBack) {
              datasource.add({ text: "All", value: 'all' })
         }
-       
+        
         datasource.sync()
         //}
     }
@@ -72,8 +77,19 @@ function inItFODropDown() {
     dd2.select(1);
 }
 
+
+
 $(document).ready(function () {
-    setTimeout("Search();", 500);
+    setTimeout("Search(null,-1);", 500);
+    //setTimeout("$(\"#pagerDropDown\").val(-1);", 500);
+
+    setTimeout(function () {
+        $('#pagerDropDown').change(function () {
+            Search(null, $('#pagerDropDown').val());
+        });
+    }, 500);
+
+   
 
     //if (roleText=="RO") {
     //    setTimeout("inItRODropDown();", 500);
@@ -176,6 +192,13 @@ $(document).ready(function () {
     }
 });
 
+function onPaging(arg) {
+    pagIndex = arg.page
+}
+
+
+
+
 function displayLoading(target, display) {
     var element = $(target);
     kendo.ui.progress(element, display);
@@ -185,24 +208,6 @@ function onSorting(arg) {
     sortModel.field = arg.sort.field;
     sortModel.dir = arg.sort.dir;
 }
-
-//function onReportTitleSelect(e) {
-//    var newGridName = '';
-
-//    if (e.dataItem) {
-//        var dataItem = e.dataItem;
-//        newGridName = '#ReportGrid_' + dataItem.Value;
-
-//        // Selected a new grid? Hide old partial.
-//        if (gridName && gridName != newGridName) {
-//            $(gridName).addClass('hide');
-//            $(".status").html('');
-//            $("#approvalsGridWrapper").addClass('hide');
-//        }
-
-//        gridName = newGridName;
-//    }
-//};
 
 function Clear() {
 
@@ -306,8 +311,12 @@ function onGridDataBound(e) {
     var page = grid.dataSource.page();
     var pageSize = grid.dataSource.pageSize();
     var totalRecords = grid.dataSource.total();
-
-
+    if (pageSize == -1) {
+        $("#pager-info").text(`1 - ${totalRecords} of ${totalRecords} items`);
+    } else {
+        $("#pager-info").text(`${page} - ${pageSize} of ${totalRecords} items`);
+    }
+    
 
     displayLoading("#approvalsContainer", false);
 
@@ -352,7 +361,6 @@ function onGridDataBound(e) {
        
         for (var j = 0; j < dataList.length; j++) {
             var _FOrow = e.sender.tbody[0].rows[j];
-            console.log(_FOrow.childNodes[14]);
             $(_FOrow.childNodes[14]).css({ "cssText":"color:#a9aeb1!important;" });
             $(_FOrow.childNodes[15]).css({ "cssText": "color:#a9aeb1!important;" });
             $(_FOrow.childNodes[16]).css({ "cssText": "color:#a9aeb1!important;" });

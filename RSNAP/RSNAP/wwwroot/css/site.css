@@ -591,7 +591,10 @@ h3 {
     color: #a9aeb1 !important;
 }
 
-.k-pager-wrap.k-pager-md .k-pager-info, .k-pager-wrap.k-pager-sm .k-pager-info {
+/*.k-pager-wrap.k-pager-md .k-pager-info, .k-pager-wrap.k-pager-sm .k-pager-info {
      display: flex !important; 
-}
+}*/
 
+.k-pager-sizes {
+    display: none !important;
+}
