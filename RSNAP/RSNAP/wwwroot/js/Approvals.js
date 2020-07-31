@@ -42,10 +42,13 @@ function Search(_rangeControl,_size) {
 
         var pageSizeDropDownList = grid.wrapper.children(".k-grid-pager").find("select").data("kendoDropDownList");
         var datasource = pageSizeDropDownList.dataSource;
-        if (_size==-1) {
+        if (_size == -1) {
             grid.dataSource.page(1);
+            grid.dataSource.pageSize(_size);
+        } else {
+            grid.dataSource.pageSize(_size);
         }
-        grid.dataSource.pageSize(_size);
+        
         if (isPostBack) {
              datasource.add({ text: "All", value: 'all' })
         }

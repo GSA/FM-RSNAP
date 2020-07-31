@@ -40,15 +40,15 @@ namespace RSNAP.Controllers
             }
 
             // Disable All fields and Modification buttons, only search fields and button enabled
-            if (_ROLE == RoleEnum.FO.GetDescription())
+            if (_ROLE.ToUpper() == RoleEnum.FO.GetDescription())
             {
                 _RoleText = "FO";
             }
-            else if (_ROLE == RoleEnum.CO.GetDescription())
+            else if (_ROLE.ToUpper() == RoleEnum.CO.GetDescription())
             {
                 _RoleText = "CO";
             }
-            else if (_ROLE == RoleEnum.RO.GetDescription())
+            else if (_ROLE.ToUpper() == RoleEnum.RO.GetDescription())
             {
                 _RoleText = "RO";
             }

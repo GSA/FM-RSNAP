@@ -466,6 +466,10 @@ h3 {
         box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, .5);
     }
 
+#approvalsContainer .k-pager-refresh {
+    margin-right: 15px !important;
+}
+
 #approvalsContainer {
     max-width: none;
     padding: 0;
@@ -598,3 +602,13 @@ h3 {
 .k-pager-sizes {
     display: none !important;
 }
+.k-pager-wrap {
+    margin-left: 15px !important;
+}
+
+.k-pager-last {
+    margin-right: 15px !important;
+}
+
+
+
