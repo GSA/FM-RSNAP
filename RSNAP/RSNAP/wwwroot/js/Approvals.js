@@ -43,9 +43,11 @@ function Search(_rangeControl,_size) {
         var pageSizeDropDownList = grid.wrapper.children(".k-grid-pager").find("select").data("kendoDropDownList");
         var datasource = pageSizeDropDownList.dataSource;
         if (_size == -1) {
-            grid.dataSource.page(1);
             grid.dataSource.pageSize(_size);
-        } else {
+        } else if (!_size) {
+            grid.dataSource.page(1);
+        }
+        else {
             grid.dataSource.pageSize(_size);
         }
         
