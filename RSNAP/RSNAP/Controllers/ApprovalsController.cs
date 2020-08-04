@@ -193,7 +193,7 @@ namespace RSNAP.Controllers
         }
 
         [HttpPost]
-        public JsonResult NnapprovedProcess(List<ProcessModel> modes)
+        public JsonResult UnapprovedProcess(List<ProcessModel> modes)
         {
             try
             {

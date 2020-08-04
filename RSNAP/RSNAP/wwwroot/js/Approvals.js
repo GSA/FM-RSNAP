@@ -4,7 +4,7 @@ var validator;
 var pdfExport = false;
 var isPostBack = true;
 var runtime = 0;
-var pagIndex = 1;
+var pageIndex = 1;
 //var gridTrigger;
 function Search(_rangeControl,_size) {
     if (!_rangeControl) {
@@ -198,7 +198,7 @@ $(document).ready(function () {
 });
 
 function onPaging(arg) {
-    pagIndex = arg.page
+    pageIndex = arg.page
 }
 
 
@@ -307,19 +307,19 @@ function getGridParams() {
         Dir: sortModel.dir
     }
 }
-var dataList = [],
-    disabledItemIds = [] //ProActID
-    ;
-function onGridDataBound(e) {
 
+var disabledItemIds = []; //ProActID
+
+function onGridDataBound(e) {
+    var dataList = [];
     var grid = e.sender;
     var page = grid.dataSource.page();
     var pageSize = grid.dataSource.pageSize();
     var totalRecords = grid.dataSource.total();
     if (pageSize == -1) {
-        $("#pager-info").text(`1 - ${totalRecords} of ${totalRecords} items`);
+        $("#pager-info").text((1) + ' - ' + (totalRecords) + ' of ' + (totalRecords) + ' items');
     } else {
-        $("#pager-info").text(`${page} - ${pageSize} of ${totalRecords} items`);
+        $("#pager-info").text((page) + ' - ' + (pageSize) + ' of ' + (totalRecords) + ' items');
     }
     
 
@@ -462,7 +462,7 @@ function Unapprove() {
         return;
     }
    
-    $.post("/rsnap/Approvals/NnapprovedProcess", { modes: proActIds }, function (data) {
+    $.post("/rsnap/Approvals/UnapprovedProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
         Clear();
         Search(true);
@@ -482,8 +482,8 @@ function UnderReview() {
         GSA_alert(data);
         Clear();
         Search(true);
-        this.selectedDataItems = null;
     });
+    this.selectedDataItems = null;
 }
 
 function ExportExcel() {
@@ -502,18 +502,18 @@ function SaveComments() {
     gridName = '#ApprovalsGrid';
     var grid = $(gridName).data("kendoGrid");
 
-    var dataList = [];
+    var commentDataList = [];
     
     for (var i = 0; i < grid.tbody[0].childNodes.length; i++) {
         var row = grid.tbody[0].childNodes[i];
         if (row.childNodes[13].childNodes[0].value) {
-            dataList.push({ 'id': row.children[2].innerText, 'newComments': row.children[13].children[0].value, 'ProId': row.children[1].innerText })
+            commentDataList.push({ 'id': row.children[2].innerText, 'newComments': row.children[13].children[0].value, 'ProId': row.children[1].innerText })
         }
         
 
     }
 
-    $.post("/rsnap/Approvals/SaveComments", { modes: dataList }, function (data) {
+    $.post("/rsnap/Approvals/SaveComments", { modes: commentDataList }, function (data) {
         GSA_alert(data);
         Search(true);
     });
