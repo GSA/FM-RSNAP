@@ -270,6 +270,14 @@ span.k-dropdown, .k-dropdown .k-state-hover, .k-dropdown .k-state-default, .k-dr
     font-size: 18px;
 }
 
+.k-grid-header th.k-header {
+    text-align: center;
+    overflow: visible !important;
+    padding-left: 0em;
+    padding-right: 0em;
+    padding-top: 0em;
+}
+
 
 .k-textbox {
     height: 35px !important;
@@ -443,9 +451,8 @@ h3 {
 }
 
 .rsnapGrid {
-    overflow-x:scroll;
+    overflow-x: scroll;
 }
-
 
 .rsnapGrid .toolBar button {
     margin-left: 10px;
@@ -499,7 +506,7 @@ h3 {
         word-wrap: normal;
         word-break: keep-all;
         height: auto !important;
-        white-space: nowrap !important;
+        white-space: normal !important;
         font-weight: 700;
         color: #495057;
         border: 1px solid #e9ecef;
@@ -524,7 +531,8 @@ h3 {
     #approvalsContainer tr th:first-child,
     #approvalsContainer tr td:first-child {
         /*padding: 0 !important;*/
-        text-align: center;
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
     #approvalsContainer .k-pager-nav {
@@ -588,6 +596,9 @@ h3 {
 #ApprovalsGrid {
     display: inline-block !important;
 }
+/*#ApprovalsGrid > table {
+    table-layout: fixed;
+}*/
 .k-grid-pager {
     display:inline-flex;
 }

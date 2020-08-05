@@ -172,28 +172,27 @@
 })
 .ToolBar(toolbar =>
 {
+    var pagerHtml = "<select id=\"pagerDropDown\" class=\"form-control\" style=\"width: 50px;height:20px;\"><option value=\"5\">5</option><option value=\"10\">10</option><option value=\"15\">15</option><option value=\"20\">20</option><option value=\"25\">25</option><option value=\"50\">50</option><option value=\"100\">100</option><option value=\"500\">500</option><option selected value=\"-1\">All</option></select><div class=\"ml-1\">items per page</div><div class=\"ml-3\" id=\"pager-info\"></div>";
     if (ViewData["Role"].ToString()=="RO")
     {
-        toolbar.ClientTemplate("<div class=\"toolBar align-items-center\"><button class=\"k-button k-primary\" onclick=\"SaveComments()\">Save Comments</button>" +
-            "<select  id=\"pagerDropDown\" class=\"form-control\" style=\"width: 50px;height:20px;\"><option value=\"5\">5</option><option value=\"10\">10</option><option value=\"20\">20</option><option value=\"50\">50</option><option value=\"100\">100</option><option selected value=\"-1\">All</option></select><div class=\"ml-1\">items per page</div><div class=\"ml-3\" id=\"pager-info\"></div></div>");
+        toolbar.ClientTemplate("<div class=\"toolBar align-items-center\"><button class=\"k-button k-primary\" onclick=\"SaveComments()\">Save Comments</button>" + pagerHtml + "</div>");
     }
     else
     {
-        toolbar.ClientTemplate("<div class=\"toolBar align-items-center\"><button class=\"k-button k-primary\" onclick=\"Approve()\" >Approve</button><button onclick=\"Unapprove()\" class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\" onclick=\"UnderReview()\">Under Review</button><button class=\"k-button k-primary\"  onclick=\"ExportExcel()\" >Save To Excel</button>" +
-            "<select  id=\"pagerDropDown\" class=\"form-control\" style=\"width: 50px;height:20px;\"><option value=\"5\">5</option><option value=\"10\">10</option><option value=\"20\">20</option><option value=\"50\">50</option><option value=\"100\">100</option><option selected value=\"-1\">All</option></select><div class=\"ml-1\">items per page</div><div class=\"ml-3\" id=\"pager-info\"></div></div>");
+        toolbar.ClientTemplate("<div class=\"toolBar align-items-center\"><button class=\"k-button k-primary\" onclick=\"Approve()\" >Approve</button><button onclick=\"Unapprove()\" class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\" onclick=\"UnderReview()\">Under Review</button><button class=\"k-button k-primary\" onclick=\"ExportExcel()\" >Save To Excel</button>" + pagerHtml + "</div>");
     }
 
 })
 .Events(events =>
 events.DataBound("onGridDataBound")
 .Change("onChange").Sort("onSorting").Page("onPaging"))
-//.Scrollable(sc => sc.Height(540))
+//.Scrollable(sc => sc.Height("auto"))
 .HtmlAttributes(new { @class = "rsnap-grid" })
 .Resizable(re => re.Columns(true))
 .Navigatable(true)
 .Sortable()
 .AutoBind(false)
-.Pageable(pager => pager.PageSizes(new[] { 5,10, 20, 50, 100 })
+.Pageable(pager => pager.PageSizes(new[] { 5, 10, 15, 20, 25, 50, 100, 500})
 .Refresh(true)
 .ButtonCount(5))
 .DataSource(dataSource => dataSource

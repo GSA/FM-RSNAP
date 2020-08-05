@@ -73,7 +73,15 @@ namespace RSNAP.Controllers
             model.NotificationStatusAvailable.Insert(0, new SelectListItem("Select Status", ""));
             
             ViewData["Role"] = _RoleText;
-            ViewData["RoleText"] = string.IsNullOrEmpty(_ROLE) ? "" : $" as { _ROLE.ToLower()}";
+            // Strip "RSNAP" from the role description.
+            var roleText = "";
+            if (!string.IsNullOrEmpty(_ROLE))
+            {
+                var removeString = "RSNAP ";
+                var index = _ROLE.IndexOf(removeString);
+                roleText = String.Format(" as {0}", (index == 0) ? _ROLE.Remove(index, removeString.Length) : _ROLE);
+            }
+            ViewData["RoleText"] = roleText.ToLower();
             return View(model);
         }
 
