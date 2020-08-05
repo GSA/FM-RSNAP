@@ -4,8 +4,9 @@ var validator;
 var pdfExport = false;
 var isPostBack = true;
 var runtime = 0;
+var pageIndex = 1;
 //var gridTrigger;
-function Search(_rangeControl) {
+function Search(_rangeControl,_size) {
     if (!_rangeControl) {
         ProActIds = null;
     }
@@ -35,16 +36,25 @@ function Search(_rangeControl) {
 
         var grid = $(gridName).data("kendoGrid");
 
-        grid.dataSource.page(1);
+        //grid.dataSource.page(1);
 
 
 
         var pageSizeDropDownList = grid.wrapper.children(".k-grid-pager").find("select").data("kendoDropDownList");
         var datasource = pageSizeDropDownList.dataSource;
+        if (_size == -1) {
+            grid.dataSource.pageSize(_size);
+        } else if (!_size) {
+            grid.dataSource.page(1);
+        }
+        else {
+            grid.dataSource.pageSize(_size);
+        }
+        
         if (isPostBack) {
              datasource.add({ text: "All", value: 'all' })
         }
-       
+        
         datasource.sync()
         //}
     }
@@ -72,8 +82,19 @@ function inItFODropDown() {
     dd2.select(1);
 }
 
+
+
 $(document).ready(function () {
-    setTimeout("Search();", 500);
+    setTimeout("Search(null,-1);", 500);
+    //setTimeout("$(\"#pagerDropDown\").val(-1);", 500);
+
+    setTimeout(function () {
+        $('#pagerDropDown').change(function () {
+            Search(null, $('#pagerDropDown').val());
+        });
+    }, 500);
+
+   
 
     //if (roleText=="RO") {
     //    setTimeout("inItRODropDown();", 500);
@@ -176,6 +197,13 @@ $(document).ready(function () {
     }
 });
 
+function onPaging(arg) {
+    pageIndex = arg.page
+}
+
+
+
+
 function displayLoading(target, display) {
     var element = $(target);
     kendo.ui.progress(element, display);
@@ -185,24 +213,6 @@ function onSorting(arg) {
     sortModel.field = arg.sort.field;
     sortModel.dir = arg.sort.dir;
 }
-
-//function onReportTitleSelect(e) {
-//    var newGridName = '';
-
-//    if (e.dataItem) {
-//        var dataItem = e.dataItem;
-//        newGridName = '#ReportGrid_' + dataItem.Value;
-
-//        // Selected a new grid? Hide old partial.
-//        if (gridName && gridName != newGridName) {
-//            $(gridName).addClass('hide');
-//            $(".status").html('');
-//            $("#approvalsGridWrapper").addClass('hide');
-//        }
-
-//        gridName = newGridName;
-//    }
-//};
 
 function Clear() {
 
@@ -297,17 +307,21 @@ function getGridParams() {
         Dir: sortModel.dir
     }
 }
-var dataList = [],
-    disabledItemIds = [] //ProActID
-    ;
-function onGridDataBound(e) {
 
+var disabledItemIds = []; //ProActID
+
+function onGridDataBound(e) {
+    var dataList = [];
     var grid = e.sender;
     var page = grid.dataSource.page();
     var pageSize = grid.dataSource.pageSize();
     var totalRecords = grid.dataSource.total();
-
-
+    if (pageSize == -1) {
+        $("#pager-info").text((1) + ' - ' + (totalRecords) + ' of ' + (totalRecords) + ' items');
+    } else {
+        $("#pager-info").text((page) + ' - ' + (pageSize) + ' of ' + (totalRecords) + ' items');
+    }
+    
 
     displayLoading("#approvalsContainer", false);
 
@@ -352,7 +366,6 @@ function onGridDataBound(e) {
        
         for (var j = 0; j < dataList.length; j++) {
             var _FOrow = e.sender.tbody[0].rows[j];
-            console.log(_FOrow.childNodes[14]);
             $(_FOrow.childNodes[14]).css({ "cssText":"color:#a9aeb1!important;" });
             $(_FOrow.childNodes[15]).css({ "cssText": "color:#a9aeb1!important;" });
             $(_FOrow.childNodes[16]).css({ "cssText": "color:#a9aeb1!important;" });
@@ -449,7 +462,7 @@ function Unapprove() {
         return;
     }
    
-    $.post("/rsnap/Approvals/NnapprovedProcess", { modes: proActIds }, function (data) {
+    $.post("/rsnap/Approvals/UnapprovedProcess", { modes: proActIds }, function (data) {
         GSA_alert(data);
         Clear();
         Search(true);
@@ -469,8 +482,8 @@ function UnderReview() {
         GSA_alert(data);
         Clear();
         Search(true);
-        this.selectedDataItems = null;
     });
+    this.selectedDataItems = null;
 }
 
 function ExportExcel() {
@@ -489,18 +502,18 @@ function SaveComments() {
     gridName = '#ApprovalsGrid';
     var grid = $(gridName).data("kendoGrid");
 
-    var dataList = [];
+    var commentDataList = [];
     
     for (var i = 0; i < grid.tbody[0].childNodes.length; i++) {
         var row = grid.tbody[0].childNodes[i];
         if (row.childNodes[13].childNodes[0].value) {
-            dataList.push({ 'id': row.children[2].innerText, 'newComments': row.children[13].children[0].value, 'ProId': row.children[1].innerText })
+            commentDataList.push({ 'id': row.children[2].innerText, 'newComments': row.children[13].children[0].value, 'ProId': row.children[1].innerText })
         }
         
 
     }
 
-    $.post("/rsnap/Approvals/SaveComments", { modes: dataList }, function (data) {
+    $.post("/rsnap/Approvals/SaveComments", { modes: commentDataList }, function (data) {
         GSA_alert(data);
         Search(true);
     });

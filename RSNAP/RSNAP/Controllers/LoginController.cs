@@ -65,6 +65,12 @@ namespace RSNAP.Controllers
             else return RedirectToAction("Index", "Home");
         }
 
+        [Route("Login/LoginFailed")]
+        public IActionResult LoginFailed()
+        {
+            return View();
+        }
+
         [Route("Login/LogoutAsync")]
         public async Task<IActionResult> LogoutAsync()
         {
@@ -164,6 +170,8 @@ namespace RSNAP.Controllers
         [Authorize]
         public async Task<IActionResult> CheckCAAM()
         {
+            var viewDataErrorKey = "loginFailedError";
+
             // Use our utility Data API service to check for roles.
             try
             {
@@ -186,23 +194,32 @@ namespace RSNAP.Controllers
                 }
                 else
                 {
-                    // No roles found. Log out.
-                    _logger.LogInformation("User " + User.Identity.Name + " has no valid roles.");
+                    // No roles found. Log the failure.
+                    var message = "User " + User.Identity.Name + " has no valid roles.";
+                    _logger.LogInformation(message);
+                    TempData[viewDataErrorKey] = message;
+
+                    // Log out.
+                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
                     // Audit failed logon.
                     await _auditService.WriteUserEvent("RSNAP", User.Identity.Name, UserEvent.LogonFailed);
                     
-                    return RedirectToAction("LogoutAsync", "Login");
+                    return RedirectToAction("LoginFailed", "Login");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+                TempData[viewDataErrorKey] = ex.Message;
+
+                // Log out.
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
                 // Audit failed logon.
                 await _auditService.WriteUserEvent("RSNAP", User.Identity.Name, UserEvent.LogonFailed);
 
-                return RedirectToAction("LogoutAsync", "Login");
+                return RedirectToAction("LoginFailed", "Login");
             }
         }
 

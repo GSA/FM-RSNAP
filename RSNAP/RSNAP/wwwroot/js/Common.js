@@ -88,7 +88,7 @@ function ConfigurePageSize(gridId) {
 
 function GSA_alert(content) {
     var alert = $("<div></div>").kendoAlert({
-        title: "CAAM Web Template",
+        title: "RSNAP",
         content: content
     }).data("kendoAlert");
     
@@ -100,7 +100,7 @@ function GSA_alert(content) {
 
 function GSA_confirm(content) {
     var  confirm = $("<div></div>").kendoConfirm({
-        title: "CAAM Web Template",
+        title: "RSNAP",
         content: content
     }).data("kendoConfirm")
 

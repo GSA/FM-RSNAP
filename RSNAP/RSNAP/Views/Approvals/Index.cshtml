@@ -116,14 +116,14 @@
                     @if (@ViewData["Role"].ToString() == "CO")
                     {
                         <h3 class="redWarningCopy text-center text-secondary-vivid">
-                            Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts
+                            Approval by the Administrative Contracting Officer authorizes the Budget Analyst to release the incremental fund amount(s) to the Contractor for the corresponding contracts.
                         </h3>
                     }
 
                     @if (@ViewData["Role"].ToString() == "FO")
                     {
                         <h3 class="redWarningCopy text-center text-secondary-vivid">
-                            Approval by the Funding Officer certifies that funds have been certified as available and correct for the corresponding contracts
+                            Approval by the Funding Officer certifies that funds have been certified as available and correct for the corresponding contracts.
                         </h3>
                     }
 
@@ -160,11 +160,11 @@
     columns.Bound(c => c.COEmail).Title("CO Email");
     columns.Bound(c => c.Comments).Title("Comments");
     columns.Bound(c => c.NewComments).Title("New Comments").ClientTemplate("<textarea></textarea>");
-   
+
     columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
     columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
     columns.Bound(c => c.FONote).Title("FO Notes").Width(200);
-    
+
     columns.Bound(c => c.ContractingOfficer).Title("Administrative Contracting Officer");
     columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
     columns.Bound(c => c.CONote).Title("ACO Notes").Width(210);
@@ -172,26 +172,27 @@
 })
 .ToolBar(toolbar =>
 {
+    var pagerHtml = "<select id=\"pagerDropDown\" class=\"form-control\" style=\"width: 50px;height:20px;\"><option value=\"5\">5</option><option value=\"10\">10</option><option value=\"15\">15</option><option value=\"20\">20</option><option value=\"25\">25</option><option value=\"50\">50</option><option value=\"100\">100</option><option value=\"500\">500</option><option selected value=\"-1\">All</option></select><div class=\"ml-1\">items per page</div><div class=\"ml-3\" id=\"pager-info\"></div>";
     if (ViewData["Role"].ToString()=="RO")
     {
-        toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\" onclick=\"SaveComments()\">Save Comments</button></div>");
+        toolbar.ClientTemplate("<div class=\"toolBar align-items-center\"><button class=\"k-button k-primary\" onclick=\"SaveComments()\">Save Comments</button>" + pagerHtml + "</div>");
     }
     else
     {
-        toolbar.ClientTemplate("<div class=\"toolBar\"><button class=\"k-button k-primary\" onclick=\"Approve()\" >Approve</button><button onclick=\"Unapprove()\" class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\" onclick=\"UnderReview()\">Under Review</button><button class=\"k-button k-primary\"  onclick=\"ExportExcel()\" >Save To Excel</button></div>");
+        toolbar.ClientTemplate("<div class=\"toolBar align-items-center\"><button class=\"k-button k-primary\" onclick=\"Approve()\" >Approve</button><button onclick=\"Unapprove()\" class=\"k-button k-primary\">Unapprove</button><button class=\"k-button k-primary\" onclick=\"UnderReview()\">Under Review</button><button class=\"k-button k-primary\" onclick=\"ExportExcel()\" >Save To Excel</button>" + pagerHtml + "</div>");
     }
 
 })
-.Events(events => 
+.Events(events =>
 events.DataBound("onGridDataBound")
-.Change("onChange").Sort("onSorting"))
-//.Scrollable(sc => sc.Height(540))
+.Change("onChange").Sort("onSorting").Page("onPaging"))
+//.Scrollable(sc => sc.Height("auto"))
 .HtmlAttributes(new { @class = "rsnap-grid" })
 .Resizable(re => re.Columns(true))
 .Navigatable(true)
 .Sortable()
 .AutoBind(false)
-.Pageable(pager => pager.PageSizes(new[] { 5,10, 20, 50, 100 })
+.Pageable(pager => pager.PageSizes(new[] { 5, 10, 15, 20, 25, 50, 100, 500})
 .Refresh(true)
 .ButtonCount(5))
 .DataSource(dataSource => dataSource
@@ -206,7 +207,7 @@ events.DataBound("onGridDataBound")
 .Events(events => events.Error("ajax_error_handler"))
 .Model(model => model.Id(a => a.Id))
 .Read(read => read.Url(  "/rsnap/Approvals/Approvals_Read").Data("getGridParams"))
-.PageSize(20)
+
 )
                 )
                 <div id="overlay"></div>
