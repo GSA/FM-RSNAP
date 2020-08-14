@@ -85,10 +85,12 @@ function inItFODropDown() {
 
 
 $(document).ready(function () {
-    setTimeout("Search(null,-1);", 500);
+    setTimeout("Search(null,500);", 500);
+   
     //setTimeout("$(\"#pagerDropDown\").val(-1);", 500);
 
     setTimeout(function () {
+        $('#pagerDropDown').val(500);
         $('#pagerDropDown').change(function () {
             Search(null, $('#pagerDropDown').val());
         });
