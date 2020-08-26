@@ -94,6 +94,16 @@ $(document).ready(function () {
         $('#pagerDropDown').change(function () {
             Search(null, $('#pagerDropDown').val());
         });
+        $('#ScheduledStartDate').keydown(function () {
+            if (event.keyCode == 13 || event.keyCode == 108) {
+                $("#ScheduledStartDate").data("kendoDatePicker").open();
+            }
+        });
+        $('#ScheduledEndDate').keydown(function () {
+            if (event.keyCode == 13 || event.keyCode == 108) {
+                $("#ScheduledEndDate").data("kendoDatePicker").open();
+            }
+        });
     }, 500);
 
    
