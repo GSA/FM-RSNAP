@@ -5,10 +5,10 @@ namespace RSNAP.Models
 {
     public class SearchDto
     {
-        public int? PIID { get; set; }
+        public string PIID { get; set; }
         public DateTime? ScheduledStartDate { get; set; }
         public DateTime? ScheduledEndDate { get; set; }
-        public string OrderNumber { get; set; }
+        //public string OrderNumber { get; set; }
         public string IDVContractNumber { get; set; }
         public string PDN { get; set; }
         public string VendorName { get; set; }
