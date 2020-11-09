@@ -514,25 +514,47 @@ h3 {
         background-color: #E1E0DB;
     }
 
-     #approvalsContainer th.k-header a {
-          background-color: #E1E0DB;
-     }
-
-
-        #approvalsContainer tr th:nth-child(17),
-        #approvalsContainer tr td:nth-child(17) {
-            min-width: 100px;
-        }
-    #approvalsContainer tr th:nth-child(20),
-    #approvalsContainer tr td:nth-child(20) {
-        min-width: 130px;
+    #approvalsContainer th.k-header a {
+        background-color: #E1E0DB;
     }
 
+    /* Select checkbox */
     #approvalsContainer tr th:first-child,
     #approvalsContainer tr td:first-child {
         /*padding: 0 !important;*/
         padding-left: 10px;
-        padding-right: 10px;
+        padding-right: 25px;
+    }
+
+    /* IDV/Contract Number */
+    #approvalsContainer tr th:nth-child(5),
+    #approvalsContainer tr td:nth-child(5) {
+        min-width: 120px;
+    }
+
+    /* Comments columns */
+    #approvalsContainer tr th:nth-child(13),
+    #approvalsContainer tr td:nth-child(13) {
+        min-width: 300px;
+    }
+    #approvalsContainer tr th:nth-child(14),
+    #approvalsContainer tr td:nth-child(14) {
+        min-width: 300px;
+        text-align: center;
+    }
+    #approvalsContainer tr td:nth-child(14) textarea {
+        width: 90%;
+    }
+
+    /* FO Notes */
+    #approvalsContainer tr th:nth-child(17),
+    #approvalsContainer tr td:nth-child(17) {
+        min-width: 300px;
+    }
+    /* ACO Notes*/
+    #approvalsContainer tr th:nth-child(20),
+    #approvalsContainer tr td:nth-child(20) {
+        min-width: 300px;
     }
 
     #approvalsContainer .k-pager-nav {

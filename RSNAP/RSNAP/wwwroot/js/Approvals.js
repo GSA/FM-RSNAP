@@ -295,24 +295,26 @@ function getGridParams() {
     var aCOApprovalStatusAvailable = $("#ACOApprovalStatusAvailable").val();
     var notificationStatusAvailable = $("#NotificationStatusAvailable").val();
 
+    /*
     if (scheduledStartDate != null && scheduledStartDate.getDate() == new Date(null).getDate()) {
         scheduledStartDate = null;
     }
     if (scheduledEndDate != null && scheduledEndDate.getDate() == new Date(null).getDate()) {
         scheduledEndDate = null;
     }
+    */
 
 
     return {
-        PPID: id,
-        IDVContractNumber: IDV,
+        PIID: (id == "" ? null : id),
+        IDVContractNumber: (IDV == "" ? null : IDV),
         ScheduledStartDate: scheduledStartDate,
         ScheduledEndDate: scheduledEndDate,
-        PDN: PDN,
-        VendorName: VendorName,
-        FOApprovalStatus: fOApprovalStatusAvailable,
-        ACOApprovalStatus: aCOApprovalStatusAvailable,
-        NotificationStatus: notificationStatusAvailable,
+        PDN: (PDN == "" ? null : PDN),
+        VendorName: (VendorName == "" ? null : VendorName),
+        FOApprovalStatus: (fOApprovalStatusAvailable == "" ? null : fOApprovalStatusAvailable),
+        ACOApprovalStatus: (aCOApprovalStatusAvailable == "" ? null : aCOApprovalStatusAvailable),
+        NotificationStatus: (notificationStatusAvailable == "" ? null : notificationStatusAvailable),
         IsPostBack: isPostBack,
         IdList: ProActIds,
         Field: sortModel.field,
@@ -499,13 +501,23 @@ function UnderReview() {
 }
 
 function ExportExcel() {
-    $.post("/rsnap/Approvals/ExportExcelData", getGridParams(), function (data) {
-        if (data.Success) {
-            location.href = "/rsnap/Approvals/GetExcel/" + data.Id;
-        } else {
+    var searchModel = getGridParams();
+    $.ajax({
+        url: '/rsnap/Approvals/ExportExcelData',
+        type: 'POST',
+        data: JSON.stringify(searchModel),
+        contentType: 'application/json',
+        dataType: 'json',
+        success: function (data) {
+            if (data.Success) {
+                location.href = "/rsnap/Approvals/GetExcel/" + data.Id;
+            } else {
+                GSA_alert(data.Message);
+            }
+        },
+        error: function () {
             GSA_alert("Please try again later.");
         }
-
     });
 }
 
@@ -530,6 +542,20 @@ function SaveComments() {
         Search(true);
     });
 
+}
+
+function parseComments(data) {
+    if (data.AllComments) {
+        var template = "";
+        for (var i = 0; i < data.AllComments.length; i++) {
+            var comment = data.AllComments[i];
+            template += kendo.format("<span>{0}</span><br><em>{1}</em><br><span>{2}</span>", kendo.toString(kendo.parseDate(comment.CommentDate), "G"), comment.UserId, comment.ProComment);
+            if (i < data.AllComments.length - 1) {
+                template += "<hr>";
+            }
+        }
+        return template;
+    }
 }
 
     //function subtotalTemplate(sum, group, text) {

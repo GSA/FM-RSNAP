@@ -142,11 +142,11 @@
     <div id="approvalsGridWrapper" class="grid-row">
         <div class="grid-col-12">
             <div class="padding-bottom2 rsnapGrid">
-                @(Html.Kendo().Grid<ApprovalsModel>()
+                @(Html.Kendo().Grid<ApprovalsWithCommentsModel>()
 .Name("ApprovalsGrid")
 .Columns(columns =>
 {
-    columns.Select().Width(50);
+    columns.Select();
     columns.Bound(c => c.ProID).Hidden();
     columns.Bound(c => c.ProActID).Hidden();
     columns.Bound(c => c.ScheduleDate).Title("Scheduled Date");
@@ -158,16 +158,16 @@
     columns.Bound(c => c.VendorName).Title("Vendor Name");
     columns.Bound(c => c.VendorEmail).Title("Vendor Email");
     columns.Bound(c => c.COEmail).Title("CO Email");
-    columns.Bound(c => c.Comments).Title("Comments");
+    columns.Bound(c => c.AllComments).Title("Comments").ClientTemplate("#=parseComments(data)#");
     columns.Bound(c => c.NewComments).Title("New Comments").ClientTemplate("<textarea></textarea>");
 
     columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
     columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
-    columns.Bound(c => c.FONote).Title("FO Notes").Width(200);
+    columns.Bound(c => c.FONote).Title("FO Notes");
 
     columns.Bound(c => c.ContractingOfficer).Title("Administrative Contracting Officer");
     columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
-    columns.Bound(c => c.CONote).Title("ACO Notes").Width(210);
+    columns.Bound(c => c.CONote).Title("ACO Notes");
     columns.Bound(c => c.NotificationStatus).Title("Notification Status");
 })
 .ToolBar(toolbar =>
@@ -175,7 +175,7 @@
     var pagerHtml = "<select id=\"pagerDropDown\" class=\"form-control\" style=\"width: 50px;height:20px;\"><option value=\"5\">5</option><option value=\"10\">10</option><option value=\"15\">15</option><option value=\"20\">20</option><option value=\"25\">25</option><option value=\"50\">50</option><option value=\"100\">100</option><option value=\"500\">500</option><option selected value=\"-1\">All</option></select><div class=\"ml-1\">items per page</div><div class=\"ml-3\" id=\"pager-info\"></div>";
     if (ViewData["Role"].ToString()=="RO")
     {
-        toolbar.ClientTemplate("<div class=\"toolBar align-items-center\"><button class=\"k-button k-primary\" onclick=\"SaveComments()\">Save Comments</button>" + pagerHtml + "</div>");
+        toolbar.ClientTemplate("<div class=\"toolBar align-items-center\"><button class=\"k-button k-primary\" onclick=\"SaveComments()\">Save Comments</button><button class=\"k-button k-primary\" onclick=\"ExportExcel()\" >Save To Excel</button>" + pagerHtml + "</div>");
     }
     else
     {

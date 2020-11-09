@@ -22,6 +22,9 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.IO;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
+using System.Globalization;
+using AutoMapper;
 
 namespace RSNAP.Controllers
 {
@@ -89,10 +92,11 @@ namespace RSNAP.Controllers
         public IActionResult Approvals_Read([DataSourceRequest] DataSourceRequest request, SearchDto searchModel)
         {
             var list = new List<ApprovalsModel>();
+            var listWithComments = new List<ApprovalsWithCommentsModel>();
 
             FillSessionInfo();
 
-            List<PagerCount> pagerCount = _context.Set<PagerCount>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@IdList,@isCount)"
+            List<PagerCount> pagerCount = _context.Set<PagerCount>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultLis,@Role,@SortBy,@SortDirection,@IdList,@isCount)"
                , new MySqlParameter("@PageIndex", request.Page)
                , new MySqlParameter("@PageSize", request.PageSize)
                , new MySqlParameter("@PopStartDate", searchModel.ScheduledStartDate)
@@ -104,7 +108,7 @@ namespace RSNAP.Controllers
                , new MySqlParameter("@FoApprovalStatus", searchModel.FOApprovalStatus)
                , new MySqlParameter("@CoApprovalStatus", searchModel.ACOApprovalStatus)
                , new MySqlParameter("@NotificationStatus", searchModel.NotificationStatus)
-               , new MySqlParameter("@isDefaultList", searchModel.IsPostBack)
+               , new MySqlParameter("@isDefaultLis", searchModel.IsPostBack)
                , new MySqlParameter("@Role", _RoleText)
                , new MySqlParameter("@SortBy", request.Sorts.Count != 0 ? request.Sorts.FirstOrDefault().Member : null)
                , new MySqlParameter("@SortDirection", request.Sorts.Count != 0 ? request.Sorts.FirstOrDefault().SortDirection.ToString() : null)
@@ -116,7 +120,7 @@ namespace RSNAP.Controllers
                 request.PageSize = pagerCount.FirstOrDefault().CountNum;
             }
 
-            list = _context.Set<ApprovalsModel>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@IdList,@isCount)"
+            list = _context.Set<ApprovalsModel>().FromSqlRaw("call Get_ROList(@PageIndex, @PageSize,@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultLis,@Role,@SortBy,@SortDirection,@IdList,@isCount)"
                , new MySqlParameter("@PageIndex", request.Page)
                , new MySqlParameter("@PageSize", request.PageSize)
                , new MySqlParameter("@PopStartDate", searchModel.ScheduledStartDate)
@@ -128,15 +132,28 @@ namespace RSNAP.Controllers
                , new MySqlParameter("@FoApprovalStatus", searchModel.FOApprovalStatus)
                , new MySqlParameter("@CoApprovalStatus", searchModel.ACOApprovalStatus)
                , new MySqlParameter("@NotificationStatus", searchModel.NotificationStatus)
-               , new MySqlParameter("@isDefaultList", searchModel.IsPostBack)
+               , new MySqlParameter("@isDefaultLis", searchModel.IsPostBack)
                , new MySqlParameter("@Role", _RoleText)
               , new MySqlParameter("@SortBy", request.Sorts.Count != 0 ? request.Sorts.FirstOrDefault().Member : null)
                , new MySqlParameter("@SortDirection", request.Sorts.Count != 0 ? request.Sorts.FirstOrDefault().SortDirection.ToString() : null)
                , new MySqlParameter("@IdList", IdListStringHelper(searchModel.IdList))
                , new MySqlParameter("@isCount", false)).ToList();
 
+            // Add comments.
+            var configuration = new MapperConfiguration(cfg => cfg.CreateMap<ApprovalsModel, ApprovalsWithCommentsModel>());
+            var mapper = new Mapper(configuration);
+
+            foreach (var ro in list)
+            {
+                var roWithComments = mapper.Map<ApprovalsWithCommentsModel>(ro); 
+                var comments = _context.PendingroCommentLog.Where(x => x.ProId == ro.ProID)
+                    .OrderByDescending(y => y.CommentDate).ToList();
+                roWithComments.AllComments = comments;
+                listWithComments.Add(roWithComments);
+            }
+
             DataSourceResult data = new DataSourceResult();
-            data.Data = list;
+            data.Data = listWithComments;
             data.Total = pagerCount.FirstOrDefault().CountNum;
             return Json(data);
         }
@@ -362,7 +379,7 @@ namespace RSNAP.Controllers
 
         }
         [HttpPost]
-        public JsonResult ExportExcelData(SearchDto searchModel)
+        public JsonResult ExportExcelData([FromBody]SearchDto searchModel)
         {
             FillSessionInfo();
 
@@ -379,12 +396,24 @@ namespace RSNAP.Controllers
                     break;
             }
 
+            // Remove timezone from dates.
+            DateTime startDate = DateTime.Now;
+            DateTime endDate = DateTime.Now;
+            if (searchModel.ScheduledStartDate != null)
+            {
+                startDate = (DateTime)searchModel.ScheduledStartDate.Value.Date;
+            }
+            if (searchModel.ScheduledEndDate != null)
+            {
+                endDate = (DateTime)searchModel.ScheduledEndDate.Value.Date;
+            }
+
             List<ExcelDataModel> list = new List<ExcelDataModel>();
 
-            list = _context.Set<ExcelDataModel>().FromSqlRaw("call Get_ROListForExcel(@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultList,@Role,@SortBy,@SortDirection,@IdList)"
+            list = _context.Set<ExcelDataModel>().FromSqlRaw("call Get_ROListForExcel(@PopStartDate,@PopEndDate,@PIID,@IDV,@PDocNo,@VendorName,@FoApprovalStatus,@CoApprovalStatus,@NotificationStatus,@isDefaultLis,@Role,@SortBy,@SortDirection,@IdList)"
 
-               , new MySqlParameter("@PopStartDate", searchModel.ScheduledStartDate)
-               , new MySqlParameter("@PopEndDate", searchModel.ScheduledEndDate)
+               , new MySqlParameter("@PopStartDate", searchModel.ScheduledStartDate.HasValue ? startDate : searchModel.ScheduledStartDate)
+               , new MySqlParameter("@PopEndDate", searchModel.ScheduledEndDate.HasValue ? endDate : searchModel.ScheduledEndDate)
                , new MySqlParameter("@PIID", searchModel.PIID)
                , new MySqlParameter("@IDV", searchModel.IDVContractNumber)
                , new MySqlParameter("@PDocNo", searchModel.PDN)
@@ -392,11 +421,16 @@ namespace RSNAP.Controllers
                , new MySqlParameter("@FoApprovalStatus", searchModel.FOApprovalStatus)
                , new MySqlParameter("@CoApprovalStatus", searchModel.ACOApprovalStatus)
                , new MySqlParameter("@NotificationStatus", searchModel.NotificationStatus)
-               , new MySqlParameter("@isDefaultList", searchModel.IsPostBack)
+               , new MySqlParameter("@isDefaultLis", searchModel.IsPostBack)
                , new MySqlParameter("@Role", _RoleText)
                 , new MySqlParameter("@SortBy", searchModel.Field)
                , new MySqlParameter("@SortDirection", sortStr)
                , new MySqlParameter("@IdList", IdListStringHelper(searchModel.IdList))).ToList();
+
+            if (list.Count == 0)
+            {
+                return Json(new { Success = false, Message = "No rows found to export." });
+            }
 
             DataTable dtSource = DataTableExtend.ToDataTable<ExcelDataModel>(list);
             IWorkbook workbook = new XSSFWorkbook();
@@ -433,7 +467,7 @@ namespace RSNAP.Controllers
         {
             var cacheByte = _cache.Get<byte[]>(Id);
             var excel = new MemoryStream(cacheByte);
-            return File(excel, "application/ms-excel", string.Concat("RSNAP_", DateTime.Now.ToShortDateString(), ".xls"));
+            return File(excel, "application/ms-excel", string.Concat("RSNAP_", DateTime.Now.ToShortDateString(), ".xlsx"));
         }
 
     }
