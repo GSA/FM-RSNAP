@@ -146,7 +146,8 @@ namespace RSNAP.Controllers
             foreach (var ro in list)
             {
                 var roWithComments = mapper.Map<ApprovalsWithCommentsModel>(ro); 
-                var comments = _context.PendingroCommentLog.Where(x => x.ProId == ro.ProID).ToList();
+                var comments = _context.PendingroCommentLog.Where(x => x.ProId == ro.ProID)
+                    .OrderByDescending(y => y.CommentDate).ToList();
                 roWithComments.AllComments = comments;
                 listWithComments.Add(roWithComments);
             }
