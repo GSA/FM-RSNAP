@@ -549,7 +549,7 @@ function parseComments(data) {
         var template = "";
         for (var i = 0; i < data.AllComments.length; i++) {
             var comment = data.AllComments[i];
-            template += kendo.format("<span>{0}</span><span>{1}</span><span>{2}</span>", kendo.toString(comment.CommentDate, "G"), comment.UserId, comment.ProComment);
+            template += kendo.format("<span>{0}</span><br><em>{1}</em><br><span>{2}</span>", kendo.toString(kendo.parseDate(comment.CommentDate), "G"), comment.UserId, comment.ProComment);
             if (i < data.AllComments.length - 1) {
                 template += "<hr>";
             }

@@ -146,7 +146,7 @@
 .Name("ApprovalsGrid")
 .Columns(columns =>
 {
-    columns.Select().Width(50);
+    columns.Select();
     columns.Bound(c => c.ProID).Hidden();
     columns.Bound(c => c.ProActID).Hidden();
     columns.Bound(c => c.ScheduleDate).Title("Scheduled Date");
@@ -163,11 +163,11 @@
 
     columns.Bound(c => c.FundingOfficer).Title("Funding Officer");
     columns.Bound(c => c.FOApprovalStatus).Title("FO Approval Status");
-    columns.Bound(c => c.FONote).Title("FO Notes").Width(200);
+    columns.Bound(c => c.FONote).Title("FO Notes");
 
     columns.Bound(c => c.ContractingOfficer).Title("Administrative Contracting Officer");
     columns.Bound(c => c.ACOApprovalStatus).Title("ACO Approval Status");
-    columns.Bound(c => c.CONote).Title("ACO Notes").Width(210);
+    columns.Bound(c => c.CONote).Title("ACO Notes");
     columns.Bound(c => c.NotificationStatus).Title("Notification Status");
 })
 .ToolBar(toolbar =>
